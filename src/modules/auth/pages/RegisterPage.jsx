@@ -1,8 +1,9 @@
-import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 import { useNavigate } from 'react-router-dom';
 
-function LoginPage() {
-  const navigate = useNavigate();
+
+function RegisterPage() {
+    const navigate = useNavigate();
   return (
     <div className='
       flex
@@ -12,18 +13,17 @@ function LoginPage() {
       bg-neutral-100
       sm:items-center
     '>
-      <LoginForm />
-     <button
+      <RegisterForm />
+
+       <button
           type="button"
-          onClick={() => navigate('/register')}
+          onClick={() => navigate('/login')}
           className="ml-1 text-blue-600 hover:underline"
         >
-          Registrate
+          Iniciar sesión
         </button>
     </div>
-
-    
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
