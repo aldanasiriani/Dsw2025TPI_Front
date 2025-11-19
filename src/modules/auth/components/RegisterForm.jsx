@@ -4,9 +4,11 @@ import Button from './Button';
 import { useState } from 'react';
 import { frontendErrorMessage } from '../helpers/backendError';
 import { registerUser } from "../services/register";
+import { useNavigate } from 'react-router-dom';
 
 
 function RegisterForm() {
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register: formRegister,
@@ -34,6 +36,7 @@ function RegisterForm() {
       setErrorMessage('Llame a soporte');
     }
   };
+  
 
   return (
     <form className='
@@ -56,6 +59,7 @@ function RegisterForm() {
         }) }
         error={errors.username?.message}
       />
+
         <Input
         label='Email'
         { ...formRegister('email', {
@@ -63,13 +67,14 @@ function RegisterForm() {
         }) }
         error={errors.email?.message}
       />
+      
        <label htmlFor="role">Role</label>
         <select id="role" {...formRegister('role', { required: 'Debe seleccionar un rol' })}>
          <option value="">Seleccione una opción</option>
          <option value="admin">Administrador</option>
          <option value="user">Usuario</option>
          </select>
-  {errors.role && <p>{errors.role.message}</p>}
+  {errors.role && <p className="text-red-500 text-base sm:text-xs">{errors.role.message}</p>}
 
       <Input
         label='Contraseña'
@@ -91,8 +96,8 @@ function RegisterForm() {
 
       <Button type='submit'>Registrar Usuario</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
-       <Button type="button" onClick={() => navigate('/login')}>
-        Iniciar Sesión </Button>
+       <Button  type="button" onClick={() => navigate('/login')}>
+        Iniciar Sesion </Button>
     </form>
   );
 };

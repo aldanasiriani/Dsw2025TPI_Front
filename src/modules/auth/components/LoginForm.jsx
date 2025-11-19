@@ -3,9 +3,12 @@ import Input from './Input';
 import Button from './Button';
 import { useState } from 'react';
 import { login } from '../services/login';
-
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
+  // 💡 FUNCIÓN MODIFICADA PARA PRUEBAS
+  
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
@@ -23,8 +26,9 @@ function LoginForm() {
         return;
       }
 
+      navigate('/admin'); 
       console.log(data);
-
+      
     } catch (error) {
       console.error(error);
       setErrorMessage('Llame a soporte');
@@ -61,8 +65,10 @@ function LoginForm() {
         error={errors.password?.message}
       />
 
-      <Button type='submit'>Iniciar Sesión</Button>
+      <Button type='submit'onClick={() => navigate('/admin')}>Iniciar Sesión</Button>
       {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
+      <Button type='button' onClick={() => navigate('/register')}
+          >Registrarse</Button>
     </form>
   );
 };

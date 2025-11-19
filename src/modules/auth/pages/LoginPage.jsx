@@ -1,8 +1,8 @@
 import LoginForm from '../components/LoginForm';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
-function LoginPage() {
-  const navigate = useNavigate();
+function LoginPage({onLoginSuccess}) {
+  //const navigate = useNavigate();
   return (
     <div className='
       flex
@@ -12,14 +12,8 @@ function LoginPage() {
       bg-neutral-100
       sm:items-center
     '>
-      <LoginForm />
-     <button
-          type="button"
-          onClick={() => navigate('/register')}
-          className="ml-1 text-blue-600 hover:underline"
-        >
-          Registrate
-        </button>
+      <LoginForm onLoginSuccess={onLoginSuccess}/>
+     
     </div>
 
     
