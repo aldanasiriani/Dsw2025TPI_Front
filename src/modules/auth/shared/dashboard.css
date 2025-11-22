@@ -33,7 +33,7 @@
     color: #1f2937;
 }
 
-.logout-button {
+.product-button {
     background-color: rgb(216, 210, 218); /* Tu color */
     color: white;
     font-weight: 500;
@@ -42,14 +42,21 @@
     border-radius: 0.375rem;
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
+    
 }
 
-.logout-button:hover {
+.product-button:hover {
     background-color: gray; /* Tu color de hover */
 }
 
+.product,.input-buscar, .product-button{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+}
 /* Ocultar elementos de UI móvil en escritorio */
-.menu-toggle-button, .logout-button-sidebar, .sidebar-overlay {
+.menu-toggle-button, .product-button-sidebar, .sidebar-overlay {
     display: none;
 }
 
@@ -121,6 +128,15 @@
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     border: 1px solid #e5e7eb;
+    margin-bottom: 0.2em;
+    
+}
+.card-title{
+    font-size: 1.5em;
+}
+
+.input-buscar{
+    margin-left: 1.5em;
 }
 
 /* --------------------------------------------------- */
@@ -161,7 +177,7 @@
         color: #1f2937; /* Color del icono */
     }
     
-    .logout-button {
+    .product-button {
         display: none; /* Ocultar el botón de cerrar sesión del header en móvil */
     }
 
@@ -197,7 +213,7 @@
     }
     
     /* Mostrar el botón de logout en la sidebar para móvil (con tus estilos) */
-    .logout-button-sidebar {
+    .product-button-sidebar {
         display: block;
         width: 90%;
         margin: auto auto 1rem auto; /* 💡 Empujar al fondo con auto top-margin */
@@ -213,7 +229,7 @@
         transition: background-color 0.15s ease-in-out;
     }
     
-    .logout-button-sidebar:hover {
+    .product-button-sidebar:hover {
         background-color: gray;
     }
 
