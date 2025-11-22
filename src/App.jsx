@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './modules/auth/pages/LoginPage';
 import RegisterPage from './modules/auth/pages/RegisterPage';
 import Dashboard from './modules/auth/components/Dashboard';
+import CreateProductPage from './modules/auth/pages/CreateProductPage';
 // import ProtectedRoute from './components/ProtectedRoute'; // 💡 Ya no lo necesitamos por ahora
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         
         {/* 💡 RUTA DESPROTEGIDA TEMPORALMENTE */}
         <Route path="/admin" element={<Dashboard/>}/>
+        <Route path="/admin/products/create" element={<CreateProductPage />} />
         
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

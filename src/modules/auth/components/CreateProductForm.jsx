@@ -1,114 +1,105 @@
-import React, { useState } from 'react';
-import '../shared/dashboard.css';
+import React, { useState } from 'react'; // Agregué useState por si lo necesitas luego
 import { useForm } from 'react-hook-form'; 
 import Input from './Input'; 
-import Button from './Button';
+import Button from './Button'; 
+// import { createProduct } from '../services/productService'; // Deberías importar tu servicio de productos aquí
 
-function CreateProductForm(){
-
-    const [activeSection, setActiveSection] = useState('Principal'); 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 💡 NUEVO: Estado para abrir/cerrar sidebar
+function CreateProductForm({ onAfterCreate, onCancel }) {
 
     const {
-        register: formRegister, // Renombré 'register' a 'formRegister' para evitar conflicto
+        register: formRegister,
         handleSubmit,
         formState: { errors },
-        reset,
     } = useForm({
         defaultValues: { sku: '', codigoUnico: '', nombre: '', descripcion: '', precio: 0, stock: 0 }
     });
 
-    const onValid = (formData) => {
-        console.log("Datos del Producto a Crear:", formData);
-        // Aquí llamarías a tu service: createProduct(formData);
-        alert("Producto creado (simulado)!");
-        reset(); // Limpiar el formulario
+    const onValid = async (formData) => {
+        // Aquí iría la lógica real de creación
+        console.log("Datos válidos:", formData);
+        alert("Validación exitosa. Intentando crear producto...");
+        
+        // Lógica simulada para evitar errores de 'login is not defined'
+        if (onAfterCreate) onAfterCreate();
     };
 
+    return (
+        <div className="w-full"> 
+            <h2 className="card-title" style={{ marginBottom: '20px' }}><strong>Crear Nuevo Producto</strong></h2>
+            
+            <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                
+                {/* 1. SKU */}
+                <Input 
+                    label='SKU' 
+                    { ...formRegister('sku', { required: 'El SKU es obligatorio' }) } // 💡 Corrección: Mensaje de texto
+                    error={errors.sku?.message} 
+                />
 
-    return(
-      <>
-       
+                {/* 2. CÓDIGO ÚNICO */}
+                <Input 
+                    label='Código Único' 
+                    { ...formRegister('codigoUnico', { required: 'El código es obligatorio' }) } 
+                    error={errors.codigoUnico?.message} 
+                />
 
-                <div className="content-card">
-                    {/* 💡 CORREGIR: Usar handleSubmit y onValid definidos arriba */}
-                    <form 
-                        className='
-        flex
-        flex-col
-        gap-20
-        bg-white
-        p-8
-        sm:w-xl-40px
-        sm:gap-4
-        sm:rounded-lg
-        sm:shadow-lg
-      ' // Reemplazo tus clases Tailwind genéricas
-                        onSubmit={handleSubmit(onValid)}
-                    >
-                        {/* 💡 CORREGIR: Referencia a formRegister y errors */}
-                        <Input
-                            label='SKU'
-                            { ...formRegister('sku', { required: 'SKU es obligatorio' }) }
-                            error={errors.sku?.message}
+                {/* 3. NOMBRE */}
+                <Input 
+                    label='Nombre' 
+                    { ...formRegister('nombre', { required: 'El nombre es obligatorio' }) } 
+                    error={errors.nombre?.message} 
+                />
+
+                {/* 4. DESCRIPCIÓN */}
+                <Input 
+                    label='Descripción' 
+                    { ...formRegister('descripcion', { required: 'La descripción es obligatoria' }) } 
+                    error={errors.descripcion?.message} 
+                />
+
+                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1 }}>
+                        {/* 5. PRECIO */}
+                        <Input 
+                            label='Precio' 
+                            type="number" 
+                            { ...formRegister('precio', { 
+                                required: 'El precio es obligatorio',
+                                min: { value: 0.01, message: 'El precio debe ser mayor a 0' }
+                            }) } 
+                            // 💡 Corrección: Apuntar a errors.precio, no a sku
+                            error={errors.precio?.message} 
                         />
-                        {/* 2. Código Único */}
-            <Input
-                label='Codigo Unico'
-                { ...formRegister('codigoUnico', {
-                    required: 'Codigo Unico es obligatorio',
-                }) }
-                error={errors.codigoUnico?.message}
-            />
-            
-            {/* 3. Nombre */}
-            <Input
-                label='Nombre'
-                { ...formRegister('nombre', {
-                    required: 'El nombre es obligatorio',
-                }) }
-                error={errors.nombre?.message}
-            />
-            
-            {/* 4. Descripción */}
-            <Input
-                label='Descripcion'
-                { ...formRegister('descripcion', {
-                    required: 'La descripcion es obligatorio',
-                }) }
-                error={errors.descripcion?.message}
-            />
-
-            {/* 5. Precio */}
-            <Input
-                label='Precio'
-                type='number' // Es importante que sea tipo number para precios
-                { ...formRegister('precio', {
-                    required: 'El precio es obligatorio',
-                    min: { value: 0.01, message: 'El precio debe ser mayor a cero' }
-                }) }
-                error={errors.precio?.message}
-            />
-            
-            {/* 6. Stock */}
-            <Input
-                label='Stock'
-                type='number' // Es importante que sea tipo number para stock
-                { ...formRegister('stock', {
-                    required: 'El stock es obligatorio',
-                    min: { value: 1, message: 'El stock debe ser al menos 1' }
-                }) }
-                error={errors.stock?.message}
-            />
-                        
-                        <Button type='submit'>Crear Producto</Button>
-                    </form>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        {/* 6. STOCK */}
+                        <Input 
+                            label='Stock' 
+                            type="number" 
+                            { ...formRegister('stock', { 
+                                required: 'El stock es obligatorio',
+                                min: { value: 1, message: 'No puede ser negativo' }
+                            }) } 
+                            // 💡 Corrección: Faltaba pasar la prop error
+                            error={errors.stock?.message} 
+                        />
+                    </div>
                 </div>
-      </>
-        
-            
 
-            
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px', justifyContent: 'flex-end' }}>
+                    <button 
+                        type="button" 
+                        onClick={onCancel} 
+                        className="product-button"
+                        style={{ background: 'white', border: '1px solid #ccc', color: '#333' }}
+                    >
+                        Cancelar
+                    </button>
+                    <Button type='submit'>Guardar</Button>
+                </div>
+            </form>
+        </div>
     );
 }
+
 export default CreateProductForm;
