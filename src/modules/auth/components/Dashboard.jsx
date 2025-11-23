@@ -35,7 +35,7 @@ function Dashboard(){
         isActive = true;
     }
 
-    // 💡 CORRECCIÓN AQUÍ: Agrega las comillas invertidas ` `
+
     return `sidebar-item ${isActive ? 'active' : ''}`;
 };
 
@@ -127,6 +127,7 @@ function Dashboard(){
         <main className="dashboard-main-content">
             
             {activeSection === 'Principal' && (
+                
                 <>
                 <div className="content-message">
             <h3 className="card-title"><strong>Productos</strong></h3>
@@ -193,16 +194,19 @@ function Dashboard(){
                    
                     <div className="content-message">
                         <h3 className="card-title"><strong>SKU - Nombre de Producto</strong></h3>
+                        <p className="card-text">Stock - Estado </p>
             
                     </div>
 
                       <div className="content-message">
                        <h3 className="card-title"><strong>SKU - Nombre de Producto</strong></h3>
+                        <p className="card-text">Stock - Estado </p>
             
                     </div>
 
                       <div className="content-message">
                     <h3 className="card-title"><strong>SKU - Nombre de Producto</strong></h3>
+                     <p className="card-text">Stock - Estado </p>
             
                     </div>
 
@@ -227,9 +231,73 @@ function Dashboard(){
             
 
             {activeSection === 'Ordenes' && (
-                <div className="content-message">
-                    No hay ordenes disponibles.
+              <>
+                
+            <div className="content-message">
+
+                {/* FILA 1: TÍTULO + BOTÓN */}
+                <div className="fila-superior">
+                    <h3 className="card-title"><strong>Ordenes</strong></h3>
+                           
                 </div>
+
+                {/* FILA 2: BUSCADOR + ESTADO */}
+                <div className="fila-inferior">
+                    <input className="input-buscar" placeholder="Buscar"></input>
+                    
+
+                    <button className="product-button" aria-label="Buscar">
+                    <FaSearch />
+                    </button>
+
+                    
+
+                    <select className="estado-select" id="estados">
+                    <option value="">Estado de Ordenes</option>
+                    <option value="esuno">Estado Pending</option>
+                    <option value="esdos">Estado Processing</option>
+                    <option value="esuno">Estado Shipped</option>
+                    <option value="esdos">Estado  Delivered</option>
+                    <option value="esdos">Estado Cancelled</option>
+                    </select>
+                </div>
+
+                </div>
+
+                
+
+                 
+                   
+                    <div className="content-message">
+                        <h3 className="card-title"><strong> Nombre del Cliente </strong><span className="card-value">#</span></h3>
+                        <p className="card-text">Estado </p>
+                     
+                    </div>
+                       <div className="content-message">
+                        <h3 className="card-title"><strong> Nombre del Cliente </strong><span className="card-value">#</span></h3>
+                        <p className="card-text">Estado </p>
+                     
+            
+                    </div>
+
+                     <div className="content-message">
+                        <h3 className="card-title"><strong> Nombre del Cliente </strong><span className="card-value">#</span></h3>
+                        <p className="card-text">Estado </p>
+                    </div>
+
+                     {/* CONTENIDO DE TABLA O LISTA (Ejemplo) */}
+                <div style={{ height: '300px', background: 'white', padding: '20px', borderRadius: '8px' }}>
+                    <p>Contenido de la página {currentPage}</p>
+                </div>
+
+                {/* 💡 AQUÍ VA EL COMPONENTE DE PAGINACIÓN */}
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+                
+                </>
             )}
             {/* 3. NUEVA SECCIÓN: CREAR PRODUCTO (Integrada) */}
                 {activeSection === 'CrearProducto' && (

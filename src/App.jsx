@@ -3,6 +3,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './modules/auth/pages/LoginPage';
 import RegisterPage from './modules/auth/pages/RegisterPage';
+import CustomerProductPage from './modules/auth/pages/CustomerProductPage';
 import Dashboard from './modules/auth/components/Dashboard';
 import CreateProductPage from './modules/auth/pages/CreateProductPage';
 // import ProtectedRoute from './components/ProtectedRoute'; // 💡 Ya no lo necesitamos por ahora
@@ -13,13 +14,16 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/register" element={<RegisterPage />} />
         
         {/* 💡 RUTA DESPROTEGIDA TEMPORALMENTE */}
         <Route path="/admin" element={<Dashboard/>}/>
         <Route path="/admin/products/create" element={<CreateProductPage />} />
+
+
+        <Route path="/products" element = {<CustomerProductPage />}/>
         
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

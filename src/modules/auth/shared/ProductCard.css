@@ -1,0 +1,112 @@
+/* --- CONTENEDOR DE LA GRILLA --- */
+.products-grid {
+  display: grid;
+  /* Esto crea columnas automáticas de mínimo 250px */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+  gap: 20px;
+  padding: 20px;
+}
+
+/* --- ESTILO DE LA TARJETA --- */
+.product-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 16px;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px); /* Efecto de levantar al pasar el mouse */
+}
+
+/* Tarjeta ancha (span 2 columnas) */
+.card-wide {
+  grid-column: span 2; /* Ocupa 2 espacios */
+}
+
+/* --- IMAGEN GRIS --- */
+.card-image-placeholder {
+  background-color: #e5e7eb; /* El gris de tu foto */
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Cuadrada */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Si es ancha, la imagen es rectangular */
+.card-wide .card-image-placeholder {
+  aspect-ratio: 2 / 1; 
+}
+
+.image-icon {
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+/* --- TEXTOS Y BOTONES --- */
+.card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto; /* Empuja el footer al fondo si sobra espacio */
+}
+
+.card-price {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.card-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* --- CONTROL DE CANTIDAD (- 0 +) --- */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.quantity-selector button {
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #333;
+  padding: 0 5px;
+}
+
+/* --- BOTÓN AGREGAR (MORADO) --- */
+.btn-add {
+  background-color: #e9d5ff; /* Lila claro */
+  color: #6b21a8; /* Morado oscuro */
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add:hover {
+  background-color: #d8b4fe;
+}
