@@ -1,105 +1,127 @@
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Input from './Input';
-import Button from './Button';
-import { useState } from 'react';
-import { frontendErrorMessage } from '../helpers/backendError';
-import { registerUser } from "../services/register";
 import { useNavigate } from 'react-router-dom';
+import Input from './Input'; 
+import Button from './Button'; 
+import { registerUser } from '../services/register'; // Asegúrate de que este import sea el correcto
 
+function RegisterForm({ showRole = false }) { 
+    
+    const navigate = useNavigate();
+    const [serverError, setServerError] = useState(null);
+    
+    const {
+        register,
+        handleSubmit,
+        watch, // <--- 1. Importamos 'watch' para mirar la contraseña original
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            username: '', 
+            password: '', 
+            confirmPassword: '', // <--- 2. Agregamos el campo al estado inicial
+            email: '', 
+            role: showRole ? 'Admin' : 'Customer' 
+        }
+    });
 
-function RegisterForm() {
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
-  const {
-    register: formRegister,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({ defaultValues: { username: '',email: '',role:'', password: '', confirmPassword: '' } });
-
-    const password = watch('password');
-  const onValid = async (formData) => {
-    try {
-      const { data, error } = await registerUser(formData.username, formData.email, formData.role ,formData.password, formData.confirmPassword);
+    const onValid = async (formData) => {
+        setServerError(null);
+        console.log("Enviando registro:", formData);
+        
+        const { data, error } = await registerUser(formData);
 
         if (error) {
-         const message =
-         frontendErrorMessage[error.code] || 'Error desconocido. Intente nuevamente.';
-         setErrorMessage(message);
-        return;
-         }
+            setServerError(error.message);
+        } else {
+            alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+            navigate('/login');
+        }
+    };
 
-      console.log('Registro exitoso:',data);
+    return (
+        <div className="card-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+            
+            <h2 className="card-title" style={{ textAlign: 'center', marginBottom: '20px' }}>
+                {showRole ? 'Registrar Usuario Interno' : 'Crear Cuenta'}
+            </h2>
 
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('Llame a soporte');
-    }
-  };
-  
+            {serverError && (
+                <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9em', textAlign: 'center'}}>
+                    {serverError}
+                </div>
+            )}
+            
+            <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                
+                {/* Nombre de Usuario */}
+                <Input 
+                    label="Nombre de Usuario"
+                    {...register('username', { required: 'El usuario es obligatorio' })}
+                    error={errors.username?.message}
+                />
 
-  return (
-    <form className='
-        flex
-        flex-col
-        gap-20
-        bg-white
-        p-8
-        sm:w-md
-        sm:gap-4
-        sm:rounded-lg
-        sm:shadow-lg
-      '
-    onSubmit={handleSubmit(onValid)}
-    >
-      <Input
-        label='Usuario'
-        { ...formRegister('username', {
-          required: 'Usuario es obligatorio',
-        }) }
-        error={errors.username?.message}
-      />
+                {/* Email */}
+                <Input 
+                    label="Correo Electrónico"
+                    type="email"
+                    {...register('email', { required: 'El email es obligatorio' })}
+                    error={errors.email?.message}
+                />
 
-        <Input
-        label='Email'
-        { ...formRegister('email', {
-          required: 'Email es obligatorio',
-        }) }
-        error={errors.email?.message}
-      />
-      
-       <label htmlFor="role">Role</label>
-        <select id="role" {...formRegister('role', { required: 'Debe seleccionar un rol' })}>
-         <option value="">Seleccione una opción</option>
-         <option value="admin">Administrador</option>
-         <option value="user">Usuario</option>
-         </select>
-  {errors.role && <p className="text-red-500 text-base sm:text-xs">{errors.role.message}</p>}
+                {/* Contraseña */}
+                <Input 
+                    label="Contraseña"
+                    type="password"
+                    {...register('password', { 
+                        required: 'La contraseña es obligatoria', 
+                        minLength: { value: 6, message: 'Mínimo 6 caracteres'} 
+                    })}
+                    error={errors.password?.message}
+                />
 
-      <Input
-        label='Contraseña'
-        { ...formRegister('password', {
-          required: 'Contraseña es obligatorio',
-        }) }
-        type='password'
-        error={errors.password?.message}
-      />
-        <Input
-        label='Confirmar contraseña'
-        { ...formRegister('confirmPassword', {
-          required: 'Confirmar contraseña es obligatorio',
-              validate: (v) => v === password || 'Las contraseñas no coinciden',
-        }) }
-        type='password'
-        error={errors.confirmPassword?.message}
-      />
+                {/* --- NUEVO CAMPO: CONFIRMAR CONTRASEÑA --- */}
+                <Input 
+                    label="Confirmar Contraseña"
+                    type="password"
+                    {...register('confirmPassword', { 
+                        required: 'Debes confirmar tu contraseña', 
+                        validate: (value) => {
+                            // Aquí comparamos con el valor del campo 'password'
+                            if (value !== watch('password')) {
+                                return "Las contraseñas no coinciden";
+                            }
+                        }
+                    })}
+                    error={errors.confirmPassword?.message}
+                />
 
-      <Button type='submit'>Registrar Usuario</Button>
-      {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
-       <Button  type="button" onClick={() => navigate('/login')}>
-        Iniciar Sesion </Button>
-    </form>
-  );
-};
+                {/* ROL (Solo Admin) */}
+                {showRole && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Rol</label>
+                        <select 
+                            {...register('role')}
+                            style={{ padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+                        >
+                            <option value="Admin">Administrador</option>
+                            <option value="User">Empleado / Usuario</option>
+                        </select>
+                    </div>
+                )}
+
+                <div style={{ marginTop: '10px' }}>
+                    <Button type="submit">Registrarse</Button>
+                </div>
+
+                {!showRole && (
+                    <p style={{ textAlign: 'center', fontSize: '0.9em', marginTop: '10px' }}>
+                        ¿Ya tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/login')}>Inicia Sesión</span>
+                    </p>
+                )}
+            </form>
+        </div>
+    );
+}
 
 export default RegisterForm;

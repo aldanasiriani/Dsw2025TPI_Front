@@ -5,7 +5,8 @@ const CartContext = createContext();
 
 // 2. Crear el Provider
 export const CartProvider = ({ children }) => {
-  // Inicializar estado leyendo de localStorage (Requisito PDF )
+  
+  // Inicializar estado leyendo de localStorage
   const [cart, setCart] = useState(() => {
     try {
       const savedCart = localStorage.getItem('cart');
@@ -23,29 +24,34 @@ export const CartProvider = ({ children }) => {
   // Función para agregar productos
   const addToCart = (product, quantity) => {
     setCart(prevCart => {
-      // Verificar si ya existe para sumar cantidad
+      // Usamos 'id' consistentemente para buscar
       const existingItem = prevCart.find(item => item.id === product.id);
       
       if (existingItem) {
+        // Si existe, sumamos la cantidad
         return prevCart.map(item => 
           item.id === product.id 
             ? { ...item, quantity: item.quantity + quantity } 
             : item
         );
       } else {
-        // Agregar nuevo ítem con los campos necesarios para la Orden (PDF [cite: 279])
+        // CORRECCIÓN IMPORTANTE:
+        // 1. Usamos 'id' (no productId) para que coincida con el resto del front.
+        // 2. Usamos 'currentUnitPrice' para que coincida con CartPage y evite el NaN.
+        // 3. Usamos parseFloat para asegurar que el precio sea un número.
         return [...prevCart, { 
-            productId: product.id, // O product.productId según tu backend
+            id: product.id, 
             name: product.name,
-            unitPrice: product.currentUnitPrice,
+            currentUnitPrice: parseFloat(product.currentUnitPrice), 
             quantity: quantity 
         }];
       }
     });
   };
 
+  // CORRECCIÓN: Filtramos por 'id' para que el botón eliminar funcione
   const removeFromCart = (productId) => {
-      setCart(prevCart => prevCart.filter(item => item.productId !== productId));
+      setCart(prevCart => prevCart.filter(item => item.id !== productId));
   };
 
   const clearCart = () => setCart([]);
@@ -57,5 +63,5 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usarlo rápido
+// Hook personalizado
 export const useCart = () => useContext(CartContext);

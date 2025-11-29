@@ -1,8 +1,8 @@
-// Archivo: src/App.jsx
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './modules/auth/pages/LoginPage';
-import RegisterPage from './modules/auth/pages/RegisterPage';
+import RegisterPage from './modules/auth/pages/RegisterPage';                 // ESTE ES EL ADMIN
+import RegisterPageCustomer from './modules/auth/pages/RegisterPageCustomer'; // ESTE ES EL CLIENTE
+
 import CustomerProductPage from './modules/auth/pages/CustomerProductPage';
 import Dashboard from './modules/auth/components/Dashboard';
 import CreateProductPage from './modules/auth/pages/CreateProductPage';
@@ -16,13 +16,24 @@ function App() {
         {/* Rutas Públicas */}
         <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/login" element={<LoginPage />} /> 
-        <Route path="/register" element={<RegisterPage />} />
+        
+        {/* CORRECCIÓN DE RUTAS: */}
+        
+        {/* 1. Ruta pública para clientes (/register) -> Carga RegisterPageCustomer */}
+        <Route path="/register" element={<RegisterPageCustomer />} />
+        
+        {/* 2. Ruta para el carrito también usa el de cliente */}
+        <Route path="/checkout-register" element={<RegisterPageCustomer />} />
+
+        {/* 3. Ruta oculta para crear Admins -> Carga RegisterPage */}
+        <Route path="/register-admin" element={<RegisterPage />} />
+
+
         <Route path="/products" element={<CustomerProductPage />}/>
         <Route path="/cart" element={<CartPage />} />
         
-        {/* 🛡️ ZONA PROTEGIDA (El guardia envuelve estas rutas) */}
+        {/* 🛡️ ZONA PROTEGIDA */}
         <Route element={<ProtectedRoute />}>
-            {/* Aquí adentro solo entras si tienes Token */}
             <Route path="/admin" element={<Dashboard/>}/>
             <Route path="/admin/products/create" element={<CreateProductPage />} />
         </Route>

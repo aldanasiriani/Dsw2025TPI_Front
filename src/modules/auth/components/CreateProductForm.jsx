@@ -1,8 +1,8 @@
-import React, { useState } from 'react'; // Agregué useState por si lo necesitas luego
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form'; 
 import Input from './Input'; 
 import Button from './Button'; 
-// import { createProduct } from '../services/productService'; // Deberías importar tu servicio de productos aquí
+import { createProduct } from "../services/product";
 
 function CreateProductForm({ onAfterCreate, onCancel }) {
 
@@ -10,17 +10,44 @@ function CreateProductForm({ onAfterCreate, onCancel }) {
         register: formRegister,
         handleSubmit,
         formState: { errors },
+        setError // Importamos setError por si el backend devuelve error de validación
     } = useForm({
         defaultValues: { sku: '', codigoUnico: '', nombre: '', descripcion: '', precio: 0, stock: 0 }
     });
+    
+    // Estado para feedback visual de carga
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const onValid = async (formData) => {
-        // Aquí iría la lógica real de creación
-        console.log("Datos válidos:", formData);
-        alert("Validación exitosa. Intentando crear producto...");
-        
-        // Lógica simulada para evitar errores de 'login is not defined'
-        if (onAfterCreate) onAfterCreate();
+        setIsSubmitting(true);
+        try {
+            // 2. MAPEO: Transformamos los datos de Español (Form) a Inglés (DTO Backend)
+            // También aseguramos que los números sean números (Number/parseFloat)
+            const productoParaBackend = {
+                Sku: formData.sku,
+                InternalCode: formData.codigoUnico,
+                Name: formData.nombre,
+                Description: formData.descripcion,
+                CurrentUnitPrice: parseFloat(formData.precio), // Convertir a decimal
+                StockQuantity: parseInt(formData.stock, 10)    // Convertir a entero
+            };
+
+            console.log("Enviando al backend:", productoParaBackend);
+
+            // 3. LLAMADA AL SERVICIO
+            await createProduct(productoParaBackend);
+            
+            alert("¡Producto creado con éxito!");
+
+            // Limpiar o redirigir
+            if (onAfterCreate) onAfterCreate();
+
+        } catch (error) {
+            console.error(error);
+            alert("Error al guardar: " + error.message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -29,28 +56,28 @@ function CreateProductForm({ onAfterCreate, onCancel }) {
             
             <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 
-                {/* 1. SKU */}
+                {/* SKU */}
                 <Input 
                     label='SKU' 
-                    { ...formRegister('sku', { required: 'El SKU es obligatorio' }) } // 💡 Corrección: Mensaje de texto
+                    { ...formRegister('sku', { required: 'El SKU es obligatorio' }) }
                     error={errors.sku?.message} 
                 />
 
-                {/* 2. CÓDIGO ÚNICO */}
+                {/* CÓDIGO ÚNICO */}
                 <Input 
                     label='Código Único' 
                     { ...formRegister('codigoUnico', { required: 'El código es obligatorio' }) } 
                     error={errors.codigoUnico?.message} 
                 />
 
-                {/* 3. NOMBRE */}
+                {/* NOMBRE */}
                 <Input 
                     label='Nombre' 
                     { ...formRegister('nombre', { required: 'El nombre es obligatorio' }) } 
                     error={errors.nombre?.message} 
                 />
 
-                {/* 4. DESCRIPCIÓN */}
+                {/* DESCRIPCIÓN */}
                 <Input 
                     label='Descripción' 
                     { ...formRegister('descripcion', { required: 'La descripción es obligatoria' }) } 
@@ -59,28 +86,27 @@ function CreateProductForm({ onAfterCreate, onCancel }) {
 
                 <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                     <div style={{ flex: 1 }}>
-                        {/* 5. PRECIO */}
+                        {/* PRECIO */}
                         <Input 
                             label='Precio' 
                             type="number" 
+                            step="0.01" // Importante para permitir decimales en HTML
                             { ...formRegister('precio', { 
                                 required: 'El precio es obligatorio',
                                 min: { value: 0.01, message: 'El precio debe ser mayor a 0' }
                             }) } 
-                            // 💡 Corrección: Apuntar a errors.precio, no a sku
                             error={errors.precio?.message} 
                         />
                     </div>
                     <div style={{ flex: 1 }}>
-                        {/* 6. STOCK */}
+                        {/* STOCK */}
                         <Input 
                             label='Stock' 
                             type="number" 
                             { ...formRegister('stock', { 
                                 required: 'El stock es obligatorio',
-                                min: { value: 1, message: 'No puede ser negativo' }
+                                min: { value: 0, message: 'No puede ser negativo' }
                             }) } 
-                            // 💡 Corrección: Faltaba pasar la prop error
                             error={errors.stock?.message} 
                         />
                     </div>
@@ -91,11 +117,15 @@ function CreateProductForm({ onAfterCreate, onCancel }) {
                         type="button" 
                         onClick={onCancel} 
                         className="product-button"
+                        disabled={isSubmitting} // Deshabilitar si está cargando
                         style={{ background: 'white', border: '1px solid #ccc', color: '#333' }}
                     >
                         Cancelar
                     </button>
-                    <Button type='submit'>Guardar</Button>
+                    {/* Cambiar texto del botón si está cargando */}
+                    <Button type='submit' disabled={isSubmitting}>
+                        {isSubmitting ? 'Guardando...' : 'Guardar'}
+                    </Button>
                 </div>
             </form>
         </div>

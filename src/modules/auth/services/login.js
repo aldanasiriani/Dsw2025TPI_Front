@@ -1,39 +1,26 @@
-import { frontendErrorMessage } from '../helpers/backendError';
-// 1. Importamos tu instancia segura que ya apunta a https://localhost:7138/api
-import api from './api'; 
+import axios from "axios";
 
-export const login = async (username, password) => {
+// IMPORTANTE: Usamos el puerto HTTPS (7138) que ya sabemos que funciona
+const API_URL = "https://localhost:7138/api/auth/login";
+
+export async function login(credentials) {
+  // credentials trae { username, password } desde el formulario
   try {
-    // 2. Usamos api.post en lugar de fetch.
-    // Esto asegura que la petición viaje encriptada por HTTPS al puerto correcto.
-    const response = await api.post('/auth/login', { 
-      username, 
-      password 
-    });
-
-    // 3. Extraemos el token de la respuesta
-    const tokenData = response.data; // Axios ya nos da el JSON en .data
-
-    // 4. IMPORTANTE PARA SEGURIDAD: Guardamos el token
-    // El PDF pide gestión de sesiones[cite: 113]. Guardarlo aquí permite
-    // que el 'interceptor' de api.js lo use para autenticar las siguientes peticiones.
-    if (tokenData && tokenData.token) {
-        localStorage.setItem('token', tokenData.token);
-    }
-
-    return { data: tokenData, error: null };
-
-  } catch (error) {
-    console.error("Error en login:", error);
+    const response = await axios.post(API_URL, credentials);
     
-    // Manejo de errores seguro
-    const errorData = error.response?.data || {};
+    // Devolvemos la data limpia
+    return { data: response.data, error: null };
+
+  } catch (err) {
+    console.error("🔥 Error en Login:", err);
+    
+    // Devolvemos el error formateado
     return {
       data: null,
       error: {
-        ...errorData,
-        frontendErrorMessage: frontendErrorMessage[errorData.code] || 'Error de conexión con el servidor',
-      },
+        status: err.response?.status,
+        message: err.response?.data || "Error al conectar con el servidor"
+      }
     };
   }
-};
+}

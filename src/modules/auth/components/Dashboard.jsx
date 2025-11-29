@@ -1,58 +1,88 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import '../shared/dashboard.css';
-import CreateProductForm from './CreateProductForm';
-import { FaSearch, FaPlus } from 'react-icons/fa';
+// Asegúrate de que las rutas a tus componentes sean correctas
+import CreateProductForm from './CreateProductForm'; 
 import Pagination from './Pagination';
+import { FaSearch, FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api'; 
 
-function Dashboard(){
+function Dashboard() {
 
+    // --- ESTADOS ---
     const [activeSection, setActiveSection] = useState('Principal'); 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
-    // Inicializamos como arrays vacíos
+    // Inicializamos SIEMPRE como arrays vacíos para evitar crash
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Paginación
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 5; 
+    const [totalPages, setTotalPages] = useState(1); 
+    const pageSize = 10; // Debe coincidir con lo que espera tu Backend
 
     const navigate = useNavigate();
 
+    // --- EFECTO DE CARGA DE DATOS ---
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // 1. PRODUCTOS
+                // 1. LOGICA DE PRODUCTOS
                 if (activeSection === 'Productos' || activeSection === 'Principal') {
-                    const response = await api.get('/products');
-                    // Protección: Si no es array, forzamos []
-                    setProducts(Array.isArray(response.data) ? response.data : []);
+                    // Llamada al backend con paginación
+                    const response = await api.get(`/products?page=${currentPage}&limit=${pageSize}`);
+                    
+                    console.log("Respuesta Backend Productos:", response.data);
+
+                    // VERIFICACIÓN DE SEGURIDAD (Evita Pantalla Blanca)
+                    if (response.data && Array.isArray(response.data.items)) {
+                        // CASO A: El backend devolvió el formato nuevo { items: [], totalCount: 50 }
+                        setProducts(response.data.items);
+                        const calculated = Math.ceil(response.data.totalCount / pageSize);
+                        setTotalPages(calculated > 0 ? calculated : 1);
+                    } 
+                    else if (Array.isArray(response.data)) {
+                        // CASO B: El backend devolvió el formato antiguo (Array simple)
+                        console.warn("Backend devolvió array simple. La paginación podría no ser exacta.");
+                        setProducts(response.data);
+                        setTotalPages(1);
+                    } 
+                    else {
+                        // CASO C: Respuesta vacía o error
+                        setProducts([]);
+                        setTotalPages(1);
+                    }
                 }
                 
-                // 2. ORDENES
+                // 2. LOGICA DE ORDENES
                 if (activeSection === 'Ordenes' || activeSection === 'Principal') {
                     try {
                         const response = await api.get('/orders');
-                        // Protección: Si no es array, forzamos []
+                        // Verificación segura
                         setOrders(Array.isArray(response.data) ? response.data : []);
                     } catch (e) {
-                        console.log("Error al traer ordenes (quizás no hay ninguna)");
-                        setOrders([]); // En caso de error, aseguramos que sea array vacío
+                        console.warn("No se pudieron cargar las ordenes", e);
+                        setOrders([]); 
                     }
                 }
+
             } catch (error) {
-                console.error("Error general:", error);
+                console.error("Error crítico cargando datos:", error);
+                // En caso de error, aseguramos que sigan siendo arrays para que el .map no explote
+                setProducts([]); 
+                setOrders([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [activeSection]); 
+    }, [activeSection, currentPage]); // Se ejecuta al cambiar sección o página
 
+    // --- HANDLERS ---
     const getSidebarItemClass = (sectionName) => {
         let isActive = activeSection === sectionName;
         if (sectionName === 'Productos' && activeSection === 'CrearProducto') isActive = true;
@@ -63,24 +93,25 @@ function Dashboard(){
 
     const handleNavigationClick = (section) => {
         setActiveSection(section);
+        if(section === 'Productos') setCurrentPage(1); // Reset a pág 1
         if (window.innerWidth <= 768) setIsSidebarOpen(false);
     };
 
-    const handlePageChange = (page) => setCurrentPage(page);
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        // Opcional: Scroll al top de la tabla
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleLogout = () => {
-        // 1. Borramos la "llave" de seguridad
         localStorage.removeItem('token'); 
-        localStorage.removeItem('username'); // Si guardaste el usuario también
-
-        // 2. (Opcional) Limpiamos estados si es necesario
+        localStorage.removeItem('username'); 
         setProducts([]);
         setOrders([]);
-
-        // 3. Redirigimos a la página de Login (o al Home)
         navigate('/', { replace: true });
     };
 
+    // --- RENDERIZADO ---
     return(
         <div className="dashboard-grid-container">
         
@@ -107,24 +138,26 @@ function Dashboard(){
         {/* MAIN CONTENT */}
         <main className="dashboard-main-content">
             
-            {/* SECCIÓN PRINCIPAL (Resumen) */}
+            {/* --- SECCIÓN PRINCIPAL --- */}
             {activeSection === 'Principal' && (
                 <>
                 <div className="content-message">
-                    <h3 className="card-title"><strong>Total Productos</strong></h3>
-                    {/* USO DE ?. PARA EVITAR PANTALLA BLANCA */}
-                    <p className="card-text"><span className="card-value">{products?.length || 0}</span></p>
+                    <h3 className="card-title"><strong>Productos (Vista)</strong></h3>
+                    <p className="card-text">
+                        <span className="card-value">{products.length}</span> mostrados
+                    </p>
                 </div>
 
                 <div className="content-message">
                     <h3 className="card-title"><strong>Total Ordenes</strong></h3>
-                    {/* USO DE ?. PARA EVITAR PANTALLA BLANCA */}
-                    <p className="card-text"><span className="card-value">{orders?.length || 0}</span></p>
+                    <p className="card-text">
+                        <span className="card-value">{orders.length}</span>
+                    </p>
                 </div>
                 </>
             )}
 
-            {/* SECCIÓN PRODUCTOS */}
+            {/* --- SECCIÓN PRODUCTOS --- */}
             {activeSection === 'Productos' && (
                 <>
                     <div className="content-message">
@@ -137,41 +170,46 @@ function Dashboard(){
                         </div>
                     </div>
 
-                    {loading && <p>Cargando...</p>}
+                    {loading && <p style={{textAlign: 'center', padding: '20px'}}>Cargando datos...</p>}
 
-                    {/* Validación robusta antes de mapear */}
+                    {/* RENDERIZADO SEGURO DE LA LISTA */}
                     {!loading && Array.isArray(products) && products.length > 0 ? (
                         products.map((prod) => (
                             <div className="content-message" key={prod.id || Math.random()} style={{borderLeft: '5px solid #646cff'}}>
-                                <h3 className="card-title"><strong>{prod.sku} - {prod.name}</strong></h3>
+                                <h3 className="card-title">
+                                    <strong>{prod.sku || 'SIN SKU'} - {prod.name || 'Sin Nombre'}</strong>
+                                </h3>
                                 <p className="card-text">
-                                    Precio: <strong>${prod.currentUnitPrice}</strong> | 
-                                    Stock: <strong>{prod.stockQuantity}</strong> | 
+                                    Precio: <strong>${prod.currentUnitPrice || 0}</strong> | 
+                                    Stock: <strong>{prod.stockQuantity || 0}</strong> | 
                                     Estado: {prod.isActive ? "Activo" : "Inactivo"}
                                 </p>
                             </div>
                         ))
                     ) : (
-                        !loading && <p>No hay productos registrados.</p>
+                        !loading && <p style={{textAlign: 'center', padding: '20px'}}>No hay productos registrados.</p>
                     )}
                     
-                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} /> 
+                    {/* Componente Paginación */}
+                    <Pagination 
+                        currentPage={currentPage} 
+                        totalPages={totalPages} 
+                        onPageChange={handlePageChange} 
+                    /> 
                 </>
             )}
 
-            {/* SECCIÓN ORDENES */}
+            {/* --- SECCIÓN ORDENES --- */}
             {activeSection === 'Ordenes' && (
                 <>
                     <div className="content-message">
                         <h3 className="card-title"><strong>Listado de Ordenes</strong></h3>
                     </div>
 
-                    {/* Validación robusta antes de mapear */}
-                    {Array.isArray(orders) && orders.length > 0 ? (
+                    {!loading && Array.isArray(orders) && orders.length > 0 ? (
                         orders.map((order) => (
                             <div className="content-message" key={order.id || Math.random()}>
                                 <h3 className="card-title">
-                                    {/* Protegemos el ID por si es nulo */}
                                     <strong>Orden #{order.id ? order.id.toString().substring(0, 8) : "N/A"}...</strong> 
                                     <span className="card-value" style={{fontSize: '0.8em', marginLeft: '10px'}}>
                                         ${order.totalAmount}
@@ -181,12 +219,12 @@ function Dashboard(){
                             </div>
                         ))
                     ) : (
-                        <p>No hay ordenes registradas.</p>
+                        !loading && <p>No hay ordenes registradas.</p>
                     )}
                 </>
             )}
 
-            {/* SECCIÓN CREAR PRODUCTO */}
+            {/* --- SECCIÓN CREAR PRODUCTO --- */}
             {activeSection === 'CrearProducto' && (
                 <div className="content-message">
                     <CreateProductForm 
@@ -194,6 +232,7 @@ function Dashboard(){
                         onAfterCreate={() => {
                             alert("Producto Creado");
                             setActiveSection('Productos'); 
+                            setCurrentPage(1); // Volver a la primera página para ver el nuevo
                         }} 
                     />
                 </div>
