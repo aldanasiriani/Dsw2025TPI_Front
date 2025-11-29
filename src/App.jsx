@@ -6,25 +6,27 @@ import RegisterPage from './modules/auth/pages/RegisterPage';
 import CustomerProductPage from './modules/auth/pages/CustomerProductPage';
 import Dashboard from './modules/auth/components/Dashboard';
 import CreateProductPage from './modules/auth/pages/CreateProductPage';
-// import ProtectedRoute from './components/ProtectedRoute'; // 💡 Ya no lo necesitamos por ahora
+import ProtectedRoute from './modules/auth/components/ProtectedRoute';
+import CartPage from './modules/auth/pages/CartPage';
 
 function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(false); // Ya no es necesario
-
   return (
     <Router>
       <Routes>
+        {/* Rutas Públicas */}
         <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/login" element={<LoginPage />} /> 
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/products" element={<CustomerProductPage />}/>
+        <Route path="/cart" element={<CartPage />} />
         
-        {/* 💡 RUTA DESPROTEGIDA TEMPORALMENTE */}
-        <Route path="/admin" element={<Dashboard/>}/>
-        <Route path="/admin/products/create" element={<CreateProductPage />} />
+        {/* 🛡️ ZONA PROTEGIDA (El guardia envuelve estas rutas) */}
+        <Route element={<ProtectedRoute />}>
+            {/* Aquí adentro solo entras si tienes Token */}
+            <Route path="/admin" element={<Dashboard/>}/>
+            <Route path="/admin/products/create" element={<CreateProductPage />} />
+        </Route>
 
-
-        <Route path="/products" element = {<CustomerProductPage />}/>
-        
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

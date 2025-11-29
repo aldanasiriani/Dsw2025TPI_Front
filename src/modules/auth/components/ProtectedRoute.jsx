@@ -1,23 +1,18 @@
-// Archivo: src/components/ProtectedRoute.jsx
-
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-/**
- * Componente que verifica el estado de autenticación.
- * Si no está autenticado, redirige al login.
- */
-function ProtectedRoute({ isAuthenticated, redirectPath = '/login' }) {
-    
-    // NOTA: En una aplicación real, 'isAuthenticated' vendría de un AuthContext o Redux.
+const ProtectedRoute = () => {
+    // 1. Buscamos el token directamente en el almacenamiento
+    const token = localStorage.getItem('token');
 
-    if (!isAuthenticated) {
-        // Si no está logueado, lo envía a /login
-        return <Navigate to={redirectPath} replace />;
+    // 2. Si NO hay token, pateamos al usuario al Login
+    // 'replace' borra el historial para que no pueda volver atrás
+    if (!token) {
+        return <Navigate to="/login" replace />;
     }
 
-    // Si está logueado, renderiza el componente anidado (<Dashboard />)
+    // 3. Si SÍ hay token, abrimos la puerta (mostramos el contenido)
     return <Outlet />;
-}
+};
 
 export default ProtectedRoute;

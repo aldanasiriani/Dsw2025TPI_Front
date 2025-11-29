@@ -1,63 +1,54 @@
-// src/modules/auth/pages/CustomerProductPage.jsx
-// Archivo: src/modules/auth/pages/CustomerProductPage.jsx
 import React from 'react';
-import ProductCard from '../components/ProductCard'; // Importamos la tarjeta
-import '../shared/dashboard.css'; // Reutilizamos estilos generales
+import Catalog from '../components/Catalog'; // <--- Importamos el componente que lee la API
+import '../shared/dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 function CustomerProductPage() {
-  
-  // Datos de ejemplo (luego vendrán de tu base de datos)
-  const products = [
-    { id: 1, title: "Camiseta Base", price: 20 },
-    { id: 2, title: "Pantalón Jean", price: 45 },
-    { id: 3, title: "Zapatillas", price: 80 },
-    { id: 4, title: "Gorra", price: 15 },
-    { id: 5, title: "Bufanda", price: 10 },
-     { id: 5, title: "Bufandi", price: 10 },
-  ];
+  const navigate = useNavigate();
 
   return (
     <div className="dashboard-grid-container" style={{ display: 'block' }}> 
-      {/* Nota: Usamos display block temporalmente porque esta vista no tiene sidebar lateral fijo */}
-
-      {/* --- HEADER (Barra de arriba) --- */}
+      
+      {/* HEADER */}
       <header className="dashboard-header" style={{ position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 className="header-title">Mi Tienda</h1>
+        <h1 className="header-title">Mi Tienda Real</h1>
+        <button 
+            className="product-button" 
+                style={{ background: '#ddd' }}
+            onClick={() => navigate('/cart')}
+        >
+    🛒 Ver Carrito
+</button>
         
-        {/* Un buscador simple */}
         <input 
             type="text" 
-            placeholder="Search..." 
+            placeholder="Buscar producto..." 
             style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ccc', width: '300px' }}
         />
 
         <div>
-            <button className="product-button" style={{ marginRight: '10px' }}>Iniciar Sesión</button>
-            <button className="product-button" style={{ background: '#ddd' }}>Registrarse</button>
+            <button 
+                className="product-button" 
+                style={{ marginRight: '10px' }}
+                onClick={() => navigate('/login')}
+            >
+                Iniciar Sesión
+            </button>
+            <button 
+                className="product-button" 
+                style={{ background: '#ddd' }}
+                onClick={() => navigate('/register')}
+            >
+                Registrarse
+            </button>
         </div>
       </header>
 
-      {/* --- CONTENIDO PRINCIPAL --- */}
+      {/* CONTENIDO */}
       <main className="dashboard-main-content" style={{ marginTop: '0' }}>
         
-        <h2 style={{ marginBottom: '20px', color: '#333' }}>Nuestros Productos</h2>
-
-        {/* AQUÍ ESTÁ LA MAGIA: El contenedor de la grilla */}
-        <div className="products-grid">
-            
-            {/* Dibujamos las tarjetas usando map */}
-            {products.map(producto => (
-                <ProductCard 
-                    key={producto.id} 
-                    title={producto.title} 
-                    price={producto.price} 
-                />
-            ))}
-
-            {/* Tarjetas extra anchas de ejemplo */}
-            <ProductCard title="Oferta de Verano" price={120} isWide={true} />
-            
-        </div>
+        {/* AQUÍ ESTÁ EL CAMBIO: Usamos <Catalog /> en lugar de la lista manual */}
+        <Catalog />
 
       </main>
     </div>
