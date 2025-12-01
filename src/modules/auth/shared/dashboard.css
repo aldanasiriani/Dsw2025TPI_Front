@@ -34,8 +34,8 @@
 }
 
 .product-button {
-    background-color: rgb(216, 210, 218); /* Tu color */
-    color: white;
+    background-color: #e9d5ff; /* Lila claro */
+    color: rgb(95, 95, 95);
     font-weight: 500;
     padding: 0.5rem 1rem;
     border: none;
@@ -46,8 +46,9 @@
 }
 
 .product-button:hover {
-    background-color: gray; /* Tu color de hover */
+    background-color: #d8b4fe;
 }
+
 
 .product,.input-buscar, .product-button{
     display: flex;
@@ -110,6 +111,22 @@
 }
 
 /* -------------------- MAIN CONTENT (Estilos de escritorio) -------------------- */
+.logout-button{
+    background-color: #ede9fe; /* Lila */
+    color: #4b5563;
+    font-weight: 600;
+    padding: 0.5rem 1rem;      /* Relleno rectangular */
+    border: none;
+    border-radius: 0.375rem;   /* Bordes ligeramente redondeados */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+.logout-button:hover {
+    background-color: #ddd6fe;
+}
 .dashboard-main-content {
     grid-row: 2 / 3; /* Debajo del header */
     grid-column: 2 / 3; /* Segunda columna */
@@ -198,6 +215,76 @@
 .icono-mobile {
     display: none;
 }
+
+.card-title{
+    font-size: 1.5rem;
+    display: flex;
+    padding-bottom: 2%;
+}
+
+/* ================================================= */
+/* ESTILOS DE LA BARRA DE BÚSQUEDA EN PRODUCTOS (Search Bar)      */
+/* ================================================= */
+
+/* Contenedor que agrupa el Input y el Botón Lupa */
+.search-container {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Ocupa todo el espacio disponible en la fila */
+    gap: 8px; /* Espacio entre el input y el botón */
+    margin: 0 10px; /* Margen lateral para no pegarse a los bordes */
+}
+
+/* El Input de texto */
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 20px; /* Bordes redondeados */
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    outline: none;
+    font-size: 0.95rem;
+    color: #374151;
+    transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+    border-color: #818cf8; /* Color al hacer clic (indigo) */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* El Botón de la Lupa */
+.search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ede9fe; /* Color lila suave */
+    color: #4b5563; /* Gris oscuro para el icono */
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Círculo perfecto */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0; /* Evita que el botón se aplaste si falta espacio */
+}
+
+.search-btn:hover {
+    background-color: #ddd6fe; /* Un poco más oscuro al pasar el mouse */
+}
+
+/* AJUSTES PARA MÓVIL */
+@media (max-width: 768px) {
+    .search-container {
+        margin: 10px 0; /* Más margen vertical en móvil */
+        width: 100%;
+    }
+}
+
+
+
+
 /* --------------------------------------------------- */
 /* MEDIA QUERY (MÓVILES - Sidebar Desplegable con Tus Estilos)*/
 /* --------------------------------------------------- */

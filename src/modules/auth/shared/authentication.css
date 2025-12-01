@@ -1,0 +1,116 @@
+/* Archivo: src/modules/auth/shared/authentication.css */
+
+/* ================================================= */
+/* ESTILOS DE AUTENTICACIÓN (LOGIN / REGISTER)       */
+/* ================================================= */
+
+/* Contenedor principal de la tarjeta (Card) */
+.auth-card {
+    max-width: 400px;
+    width: 100%;
+    margin: 2rem auto; /* Centrado vertical y horizontal */
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Borde sutil opcional */
+    border: 1px solid #f3f4f6;
+}
+
+/* Título del formulario */
+.auth-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937; /* Gris oscuro */
+}
+
+/* Mensaje de Error (Rojo) */
+.auth-error-message {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    border: 1px solid #fca5a5;
+}
+
+/* Estructura del Formulario */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Espacio entre inputs */
+}
+
+/* Contenedor del Botón */
+.auth-button-container {
+    
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.auth-button-container button{
+    background-color: #e9d5ff; /* Lila claro */
+    color: rgb(66, 66, 66);
+}
+.auth-button-container button:hover{
+     background-color: #d8b4fe;
+}
+
+/* Textos de pie de página (¿Ya tienes cuenta?) */
+.auth-footer-text {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    color: #6b7280;
+}
+
+/* Enlaces (Regístrate aquí) */
+.auth-link {
+    color: #4f46e5; /* Color índigo/azul */
+    cursor: pointer;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: #4338ca; /* Más oscuro al pasar el mouse */
+    text-decoration: underline;
+}
+
+/* Select de ROL (Específico para RegisterForm) */
+.auth-select {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    font-size: 1rem;
+    color: #374151;
+    width: 100%;
+}
+
+/* ================================================= */
+/* MEDIA QUERIES (MÓVIL)                             */
+/* ================================================= */
+
+@media (max-width: 480px) {
+    .auth-card {
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0; /* En móviles muy chicos, quitamos bordes */
+        box-shadow: none; /* Quitamos sombra para diseño plano */
+        padding: 1.5rem;
+        height: 100vh; /* Ocupa toda la pantalla */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centrar contenido verticalmente */
+    }
+
+    .auth-title {
+        font-size: 1.75rem; /* Título un poco más grande en móvil */
+    }
+}

@@ -1,11 +1,11 @@
  import React, { useState, useEffect } from 'react';
 import '../shared/dashboard.css';
-// Asegúrate de que las rutas a tus componentes sean correctas
 import CreateProductForm from './CreateProductForm'; 
 import Pagination from './Pagination';
 import { FaSearch, FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api'; 
+
 
 function Dashboard() {
 
@@ -18,10 +18,12 @@ function Dashboard() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const [searchTerm, setSearchTerm] = useState(""); 
+    const [statusFilter, setStatusFilter] = useState("");
     // Paginación
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1); 
-    const pageSize = 10; // Debe coincidir con lo que espera tu Backend
+    const pageSize = 5; // Debe coincidir con lo que espera tu Backend
 
     const navigate = useNavigate();
 
@@ -33,8 +35,41 @@ function Dashboard() {
                 // 1. LOGICA DE PRODUCTOS
                 if (activeSection === 'Productos' || activeSection === 'Principal') {
                     // Llamada al backend con paginación
-                    const response = await api.get(`/products?page=${currentPage}&limit=${pageSize}`);
                     
+                    
+                    // --- CAMBIO AQUÍ: URL DINÁMICA ---
+                let url = `/products?page=${currentPage}&limit=${pageSize}`;
+                
+                if (searchTerm) {
+                    url += `&name=${searchTerm}`;
+                }
+                
+                if (statusFilter !== "") {
+                    url += `&isActive=${statusFilter}`;
+                }
+
+                const response = await api.get(url);
+
+                let items = [];
+                let count = 0;
+
+                // CASO A: Respuesta paginada estándar (.NET)
+                if (response.data && Array.isArray(response.data.items)) {
+                    items = response.data.items;
+                    count = response.data.totalCount;
+                } 
+                // CASO B: Respuesta de array directo
+                else if (Array.isArray(response.data)) {
+                    items = response.data;
+                    count = response.data.length; // Usamos el largo del array
+                }
+
+                setProducts(items);
+
+                // Cálculo seguro de páginas
+                const pages = Math.ceil(count / pageSize);
+                setTotalPages(pages > 0 ? pages : 1);
+
                     console.log("Respuesta Backend Productos:", response.data);
 
                     // VERIFICACIÓN DE SEGURIDAD (Evita Pantalla Blanca)
@@ -68,7 +103,7 @@ function Dashboard() {
                         setOrders([]); 
                     }
                 }
-
+                
             } catch (error) {
                 console.error("Error crítico cargando datos:", error);
                 // En caso de error, aseguramos que sigan siendo arrays para que el .map no explote
@@ -80,7 +115,7 @@ function Dashboard() {
         };
 
         fetchData();
-    }, [activeSection, currentPage]); // Se ejecuta al cambiar sección o página
+    }, [activeSection, currentPage, statusFilter]); // Se ejecuta al cambiar sección o página
 
     // --- HANDLERS ---
     const getSidebarItemClass = (sectionName) => {
@@ -110,6 +145,23 @@ function Dashboard() {
         setOrders([]);
         navigate('/', { replace: true });
     };
+
+     // --- FILTRADO ---
+  // ... dentro del componente Dashboard
+
+// 1. Crear la lista filtrada
+const filteredProducts = products.filter(prod => {
+    if (!searchTerm) return true; // Si no hay búsqueda, mostrar todo
+    const term = searchTerm.toLowerCase();
+    return (
+        prod.name?.toLowerCase().includes(term) || 
+        prod.sku?.toLowerCase().includes(term)
+    );
+});
+
+
+
+
 
     // --- RENDERIZADO ---
     return(
@@ -142,16 +194,16 @@ function Dashboard() {
             {activeSection === 'Principal' && (
                 <>
                 <div className="content-message">
-                    <h3 className="card-title"><strong>Productos (Vista)</strong></h3>
-                    <p className="card-text">
-                        <span className="card-value">{products.length}</span> mostrados
+                    <h3 className="card-title"><strong>Productos</strong></h3>
+                    <p className="card-text">Cantidad de Productos: 
+                        <span className="card-value"> {products.length}</span>
                     </p>
                 </div>
 
                 <div className="content-message">
-                    <h3 className="card-title"><strong>Total Ordenes</strong></h3>
-                    <p className="card-text">
-                        <span className="card-value">{orders.length}</span>
+                    <h3 className="card-title"><strong>Ordenes</strong></h3>
+                    <p className="card-text">Cantidad de Ordenes: 
+                        <span className="card-value"> {orders.length}</span>
                     </p>
                 </div>
                 </>
@@ -168,14 +220,55 @@ function Dashboard() {
                                 <span className="icono-mobile"><FaPlus /></span>
                             </button>
                         </div>
+                        <div className="fila-inferior">
+    
+    {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
+    <div className="search-container">
+        <input 
+            type="text" 
+            placeholder="Buscar producto..." 
+            className="search-input" // 💡 Usamos la clase nueva
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            // Opcional: Permitir buscar al dar Enter
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    // Aquí podrías llamar a una función de búsqueda si no fuera automática
+                    console.log("Buscar: ", searchTerm);
+                }
+            }}
+        />
+        
+        
+    </div>
+
+    {/* 2. SELECT (Estado) */}
+    {/* Asegúrate de que este select tenga sus clases o estilos también */}
+    <select 
+    className="estado-select"
+    value={statusFilter}
+    onChange={(e) => {
+        setStatusFilter(e.target.value);
+        setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
+    }}
+>
+    <option value="">Todos</option>
+    <option value="true">Activo</option>
+    <option value="false">Inactivo</option>
+</select>
+
+</div>
                     </div>
 
-                    {loading && <p style={{textAlign: 'center', padding: '20px'}}>Cargando datos...</p>}
 
-                    {/* RENDERIZADO SEGURO DE LA LISTA */}
-                    {!loading && Array.isArray(products) && products.length > 0 ? (
-                        products.map((prod) => (
-                            <div className="content-message" key={prod.id || Math.random()} style={{borderLeft: '5px solid #646cff'}}>
+
+                    {loading && <p style={{textAlign: 'center', padding: '20px'}}>Cargando datos...</p>}
+                    
+                    
+                             {/* RENDERIZADO SEGURO DE LA LISTA */}
+                                {!loading && Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+                                      filteredProducts.map((prod) => (
+                             <div className="content-message" key={prod.id || Math.random()} style={{borderLeft: '5px solid #646cff'}}>
                                 <h3 className="card-title">
                                     <strong>{prod.sku || 'SIN SKU'} - {prod.name || 'Sin Nombre'}</strong>
                                 </h3>
@@ -185,11 +278,12 @@ function Dashboard() {
                                     Estado: {prod.isActive ? "Activo" : "Inactivo"}
                                 </p>
                             </div>
-                        ))
-                    ) : (
-                        !loading && <p style={{textAlign: 'center', padding: '20px'}}>No hay productos registrados.</p>
-                    )}
-                    
+    ))
+) : (
+    !loading && <p>No se encontraron productos.</p>
+)}
+
+
                     {/* Componente Paginación */}
                     <Pagination 
                         currentPage={currentPage} 
@@ -202,9 +296,52 @@ function Dashboard() {
             {/* --- SECCIÓN ORDENES --- */}
             {activeSection === 'Ordenes' && (
                 <>
-                    <div className="content-message">
-                        <h3 className="card-title"><strong>Listado de Ordenes</strong></h3>
-                    </div>
+                   <div className='content-message'>
+
+                  
+                   <div className="fila-superior">
+                            <h3 className="card-title"><strong>Gestión de Ordenes</strong></h3>
+                            
+                        </div>
+                        <div className="fila-inferior">
+    
+    {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
+    <div className="search-container">
+        <input 
+            type="text" 
+            placeholder="Buscar orden..." 
+            className="search-input" // 💡 Usamos la clase nueva
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            // Opcional: Permitir buscar al dar Enter
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    // Aquí podrías llamar a una función de búsqueda si no fuera automática
+                    console.log("Buscar: ", searchTerm);
+                }
+            }}
+        />
+        
+        
+    </div>
+
+    {/* 2. SELECT (Estado) */}
+    {/* Asegúrate de que este select tenga sus clases o estilos también */}
+    <select 
+    className="estado-select"
+    value={statusFilter}
+    onChange={(e) => {
+        setStatusFilter(e.target.value);
+        setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
+    }}
+>
+    <option value="">Todos</option>
+    <option value="true">Activo</option>
+    <option value="false">Inactivo</option>
+</select>
+
+</div>
+ </div>
 
                     {!loading && Array.isArray(orders) && orders.length > 0 ? (
                         orders.map((order) => (
@@ -221,6 +358,13 @@ function Dashboard() {
                     ) : (
                         !loading && <p>No hay ordenes registradas.</p>
                     )}
+
+                      {/* Componente Paginación */}
+                    <Pagination 
+                        currentPage={currentPage} 
+                        totalPages={totalPages} 
+                        onPageChange={handlePageChange} 
+                    /> 
                 </>
             )}
 

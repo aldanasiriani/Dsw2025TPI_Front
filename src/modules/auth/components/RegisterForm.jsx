@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Input from './Input'; 
 import Button from './Button'; 
-import { registerUser } from '../services/register'; // Asegúrate de que este import sea el correcto
+import { registerUser } from '../services/register'; 
+import '../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
 
 function RegisterForm({ showRole = false }) { 
     
@@ -13,13 +14,13 @@ function RegisterForm({ showRole = false }) {
     const {
         register,
         handleSubmit,
-        watch, // <--- 1. Importamos 'watch' para mirar la contraseña original
+        watch, 
         formState: { errors },
     } = useForm({
         defaultValues: {
             username: '', 
             password: '', 
-            confirmPassword: '', // <--- 2. Agregamos el campo al estado inicial
+            confirmPassword: '', 
             email: '', 
             role: showRole ? 'Admin' : 'Customer' 
         }
@@ -27,7 +28,6 @@ function RegisterForm({ showRole = false }) {
 
     const onValid = async (formData) => {
         setServerError(null);
-        console.log("Enviando registro:", formData);
         
         const { data, error } = await registerUser(formData);
 
@@ -40,28 +40,26 @@ function RegisterForm({ showRole = false }) {
     };
 
     return (
-        <div className="card-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+        <div className="auth-card">
             
-            <h2 className="card-title" style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <h2 className="auth-title">
                 {showRole ? 'Registrar Usuario Interno' : 'Crear Cuenta'}
             </h2>
 
             {serverError && (
-                <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9em', textAlign: 'center'}}>
+                <div className="auth-error-message">
                     {serverError}
                 </div>
             )}
             
-            <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleSubmit(onValid)} className="auth-form">
                 
-                {/* Nombre de Usuario */}
                 <Input 
                     label="Nombre de Usuario"
                     {...register('username', { required: 'El usuario es obligatorio' })}
                     error={errors.username?.message}
                 />
 
-                {/* Email */}
                 <Input 
                     label="Correo Electrónico"
                     type="email"
@@ -69,7 +67,6 @@ function RegisterForm({ showRole = false }) {
                     error={errors.email?.message}
                 />
 
-                {/* Contraseña */}
                 <Input 
                     label="Contraseña"
                     type="password"
@@ -80,14 +77,12 @@ function RegisterForm({ showRole = false }) {
                     error={errors.password?.message}
                 />
 
-                {/* --- NUEVO CAMPO: CONFIRMAR CONTRASEÑA --- */}
                 <Input 
                     label="Confirmar Contraseña"
                     type="password"
                     {...register('confirmPassword', { 
                         required: 'Debes confirmar tu contraseña', 
                         validate: (value) => {
-                            // Aquí comparamos con el valor del campo 'password'
                             if (value !== watch('password')) {
                                 return "Las contraseñas no coinciden";
                             }
@@ -99,10 +94,10 @@ function RegisterForm({ showRole = false }) {
                 {/* ROL (Solo Admin) */}
                 {showRole && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Rol</label>
+                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color:'#374151' }}>Rol</label>
                         <select 
                             {...register('role')}
-                            style={{ padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+                            className="auth-select"
                         >
                             <option value="Admin">Administrador</option>
                             <option value="User">Empleado / Usuario</option>
@@ -110,13 +105,13 @@ function RegisterForm({ showRole = false }) {
                     </div>
                 )}
 
-                <div style={{ marginTop: '10px' }}>
+                <div className="auth-button-container">
                     <Button type="submit">Registrarse</Button>
                 </div>
 
                 {!showRole && (
-                    <p style={{ textAlign: 'center', fontSize: '0.9em', marginTop: '10px' }}>
-                        ¿Ya tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/login')}>Inicia Sesión</span>
+                    <p className="auth-footer-text">
+                        ¿Ya tienes cuenta? <span className="auth-link" onClick={() => navigate('/login')}>Inicia Sesión</span>
                     </p>
                 )}
             </form>

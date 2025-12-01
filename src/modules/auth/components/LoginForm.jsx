@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Input from './Input';
 import Button from './Button';
 import { login } from '../services/login'; 
+import '../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
 
 function LoginForm() {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ function LoginForm() {
         formState: { errors },
     } = useForm();
 
-    // --- FUNCIÓN MÁGICA PARA LEER EL TOKEN ---
+    // Función para decodificar JWT
     const parseJwt = (token) => {
         try {
             const base64Url = token.split('.')[1];
@@ -33,58 +34,41 @@ function LoginForm() {
     const onValid = async (formData) => {
         setLoginError(null);
         
-        // 1. Conectamos al Backend
         const { data, error } = await login(formData);
 
         if (error) {
             setLoginError("Credenciales inválidas o error en el servidor.");
         } else {
-            console.log("Respuesta del login:", data); // Para depurar
-
-            // 2. Guardamos el token
-            // A veces viene como data.token, a veces directo en data
             const token = data.token || data; 
             localStorage.setItem('token', token);
             
-            // 3. PRIORIDAD: ¿Venimos del Carrito?
             if (location.state?.from) {
-                // Si venía del carrito, lo devolvemos ahí sin importar si es admin o cliente
                 navigate(location.state.from); 
                 return;
             }
 
-            // 4. Decodificamos el token para buscar el ROL
             const decodedToken = parseJwt(token);
-            console.log("Token decodificado:", decodedToken);
+            const roleClaim = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || decodedToken["role"] || "";
 
-            // En .NET, el rol suele venir con este nombre largo raro:
-            // "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-            // O a veces simplemente "role"
-            const roleClaim = 
-                decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || 
-                decodedToken["role"] || 
-                "";
-
-            // 5. Redirección según ROL
             if (roleClaim === 'Admin') {
-                navigate('/admin'); // Panel de Administración
+                navigate('/admin'); 
             } else {
-                navigate('/products'); // Tienda (Cliente)
+                navigate('/products'); 
             }
         }
     };
 
     return (
-        <div className="card-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '20px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-            <h2 className="card-title" style={{ textAlign: 'center', marginBottom: '20px' }}>Iniciar Sesión</h2>
+        <div className="auth-card">
+            <h2 className="auth-title">Iniciar Sesión</h2>
             
             {loginError && (
-                 <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '10px', borderRadius: '5px', marginBottom: '15px', textAlign: 'center'}}>
+                 <div className="auth-error-message">
                     {loginError}
                  </div>
             )}
 
-            <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleSubmit(onValid)} className="auth-form">
                 <Input 
                     label="Usuario o Email"
                     {...register('username', { required: 'Este campo es obligatorio' })}
@@ -98,12 +82,12 @@ function LoginForm() {
                     error={errors.password?.message}
                 />
 
-                <div style={{ marginTop: '10px' }}>
+                <div className="auth-button-container">
                     <Button type="submit">Ingresar</Button>
                 </div>
 
-                <p style={{ textAlign: 'center', fontSize: '0.9em', marginTop: '10px' }}>
-                    ¿No tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/register')}>Regístrate aquí</span>
+                <p className="auth-footer-text">
+                    ¿No tienes cuenta? <span className="auth-link" onClick={() => navigate('/register')}>Regístrate aquí</span>
                 </p>
             </form>
         </div>

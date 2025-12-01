@@ -6,6 +6,7 @@ import api from '../services/api';
 import '../shared/dashboard.css'; 
 
 
+
 const CustomerProductPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,17 +114,17 @@ const CustomerProductPage = () => {
             {isLoggedIn ? (
                 <button 
                     className="product-button" 
-                    style={{ background: '#ef4444', color: '#fff', border: 'none' }} // Rojo para salir
+                    
                     onClick={handleLogout}
                 >
                     Cerrar Sesión
                 </button>
             ) : (
                 <>
-                    <button className="product-button" style={{background: 'transparent', color: '#333', border: '1px solid #333'}} onClick={() => navigate('/login')}>
+                    <button className="product-button is" onClick={() => navigate('/login')}>
                         Iniciar Sesión
                     </button>
-                    <button className="product-button" style={{background: '#e5e7eb', color: '#333'}} onClick={() => navigate('/register')}>
+                    <button className="product-button"  onClick={() => navigate('/register')}>
                         Registrarse
                     </button>
                 </>
@@ -160,7 +161,7 @@ const CustomerProductPage = () => {
                     ))
                 ) : (
                     <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px' }}>
-                        <h3>😕 No encontramos nada con "{searchTerm}"</h3>
+                        <h3>No encontramos nada con "{searchTerm}"</h3>
                         <p>Intenta con otra palabra.</p>
                     </div>
                 )}
