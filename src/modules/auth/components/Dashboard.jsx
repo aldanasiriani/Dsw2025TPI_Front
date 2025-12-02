@@ -1,11 +1,11 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../shared/dashboard.css';
 import CreateProductForm from './CreateProductForm'; 
 import Pagination from './Pagination';
 import { FaSearch, FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api'; 
-
+import ProductDetailModal from './ProductDetailModal';
 
 function Dashboard() {
 
@@ -28,6 +28,8 @@ function Dashboard() {
     const [totalPages, setTotalPages] = useState(1); 
     const pageSize = 5; // Debe coincidir con lo que espera tu Backend
 
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     const navigate = useNavigate();
 
     // --- EFECTO DE CARGA DE DATOS ---
@@ -38,40 +40,39 @@ function Dashboard() {
                 // 1. LOGICA DE PRODUCTOS
                 if (activeSection === 'Productos' || activeSection === 'Principal') {
                     // Llamada al backend con paginación
-                    
-                    
+
                     // --- CAMBIO AQUÍ: URL DINÁMICA ---
-                let url = `/products?page=${currentPage}&limit=${pageSize}`;
-                
-                if (searchTerm) {
-                    url += `&name=${searchTerm}`;
-                }
-                
-                if (statusFilter !== "") {
-                    url += `&isActive=${statusFilter}`;
-                }
+                    let url = `/products?page=${currentPage}&limit=${pageSize}`;
+                    
+                    if (searchTerm) {
+                        url += `&name=${searchTerm}`;
+                    }
+                    
+                    if (statusFilter !== "") {
+                        url += `&isActive=${statusFilter}`;
+                    }
 
-                const response = await api.get(url);
+                    const response = await api.get(url);
 
-                let items = [];
-                let count = 0;
+                    let items = [];
+                    let count = 0;
 
-                // CASO A: Respuesta paginada estándar (.NET)
-                if (response.data && Array.isArray(response.data.items)) {
-                    items = response.data.items;
-                    count = response.data.totalCount;
-                } 
-                // CASO B: Respuesta de array directo
-                else if (Array.isArray(response.data)) {
-                    items = response.data;
-                    count = response.data.length; // Usamos el largo del array
-                }
+                    // CASO A: Respuesta paginada estándar (.NET)
+                    if (response.data && Array.isArray(response.data.items)) {
+                        items = response.data.items;
+                        count = response.data.totalCount;
+                    } 
+                    // CASO B: Respuesta de array directo
+                    else if (Array.isArray(response.data)) {
+                        items = response.data;
+                        count = response.data.length; // Usamos el largo del array
+                    }
 
-                setProducts(items);
+                    setProducts(items);
 
-                // Cálculo seguro de páginas
-                const pages = Math.ceil(count / pageSize);
-                setTotalPages(pages > 0 ? pages : 1);
+                    // Cálculo seguro de páginas
+                    const pages = Math.ceil(count / pageSize);
+                    setTotalPages(pages > 0 ? pages : 1);
 
                     console.log("Respuesta Backend Productos:", response.data);
 
@@ -96,48 +97,46 @@ function Dashboard() {
                 }
                 
                 // 2. LOGICA DE ORDENES
-            // 2. LOGICA DE ORDENES
-if (activeSection === 'Ordenes' || activeSection === 'Principal') {
-    try {
-        // Construimos URL base
-        let url = `/orders?page=${currentPage}&limit=${pageSize}`;
-        
-        // Si hay filtro de estado seleccionado, lo agregamos (ej: &status=1)
-        if (orderStatusFilter !== "") {
-            url += `&status=${orderStatusFilter}`;
-        }
-        
-        // Si quisieras filtrar por cliente logueado (opcional):
-        // const customerId = localStorage.getItem('customerId');
-        // if(customerId) url += `&customerId=${customerId}`;
+                if (activeSection === 'Ordenes' || activeSection === 'Principal') {
+                    try {
+                        // Construimos URL base
+                        let url = `/orders?page=${currentPage}&limit=${pageSize}`;
+                        
+                        // Si hay filtro de estado seleccionado, lo agregamos (ej: &status=1)
+                        if (orderStatusFilter !== "") {
+                            url += `&status=${orderStatusFilter}`;
+                        }
+                        
+                        // Si quisieras filtrar por cliente logueado (opcional):
+                        // const customerId = localStorage.getItem('customerId');
+                        // if(customerId) url += `&customerId=${customerId}`;
 
-        const response = await api.get(url);
-        
-        // Mapeo seguro de la respuesta paginada
-        if (response.data && Array.isArray(response.data.items)) {
-             setOrders(response.data.items);
-             const count = response.data.totalCount;
-             const pages = Math.ceil(count / pageSize);
-             setTotalPages(pages > 0 ? pages : 1);
-        } else {
-             setOrders([]);
-        }
+                        const response = await api.get(url);
+                        
+                        // Mapeo seguro de la respuesta paginada
+                        if (response.data && Array.isArray(response.data.items)) {
+                             setOrders(response.data.items);
+                             const count = response.data.totalCount;
+                             const pages = Math.ceil(count / pageSize);
+                             setTotalPages(pages > 0 ? pages : 1);
+                        } else {
+                             setOrders([]);
+                        }
 
-    } catch (e) {
-        console.warn("Error cargando ordenes", e);
-        setOrders([]); 
-    }
-}
+                    } catch (e) {
+                        console.warn("Error cargando ordenes", e);
+                        setOrders([]); 
+                    }
+                }
             } finally {
                 setLoading(false);
-            }
-
-            
+            }    
         };
 
-     // Cierra la función fetchData...
-    fetchData();
-}, [activeSection, currentPage, statusFilter, orderStatusFilter]); // <--- ¡Asegúrate de agregar orderStatusFilter aquí!
+        // Cierra la función fetchData...
+        fetchData();
+    }, [activeSection, currentPage, statusFilter, orderStatusFilter, searchTerm]);
+
 
     // --- HANDLERS ---
     const getSidebarItemClass = (sectionName) => {
@@ -168,22 +167,18 @@ if (activeSection === 'Ordenes' || activeSection === 'Principal') {
         navigate('/', { replace: true });
     };
 
+    const closeModal = () => setSelectedProduct(null);
+
      // --- FILTRADO ---
-  // ... dentro del componente Dashboard
-
-// 1. Crear la lista filtrada
-const filteredProducts = products.filter(prod => {
-    if (!searchTerm) return true; // Si no hay búsqueda, mostrar todo
-    const term = searchTerm.toLowerCase();
-    return (
-        prod.name?.toLowerCase().includes(term) || 
-        prod.sku?.toLowerCase().includes(term)
-    );
-});
-
-
-
-
+    // 1. Crear la lista filtrada
+    const filteredProducts = products.filter(prod => {
+        if (!searchTerm) return true; // Si no hay búsqueda, mostrar todo
+        const term = searchTerm.toLowerCase();
+        return (
+            prod.name?.toLowerCase().includes(term) || 
+            prod.sku?.toLowerCase().includes(term)
+        );
+    });
 
     // --- RENDERIZADO ---
     return(
@@ -244,66 +239,74 @@ const filteredProducts = products.filter(prod => {
                         </div>
                         <div className="fila-inferior">
     
-    {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
-    <div className="search-container">
-        <input 
-            type="text" 
-            placeholder="Buscar producto..." 
-            className="search-input" // 💡 Usamos la clase nueva
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            // Opcional: Permitir buscar al dar Enter
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    // Aquí podrías llamar a una función de búsqueda si no fuera automática
-                    console.log("Buscar: ", searchTerm);
-                }
-            }}
-        />
-        
-        
-    </div>
+                            {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
+                            <div className="search-container">
+                                <input 
+                                    type="text" 
+                                    placeholder="Buscar producto..." 
+                                    className="search-input"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            console.log("Buscar: ", searchTerm);
+                                        }
+                                    }}
+                                />
+                            </div>
 
-    {/* 2. SELECT (Estado) */}
-    {/* Asegúrate de que este select tenga sus clases o estilos también */}
-    <select 
-    className="estado-select"
-    value={statusFilter}
-    onChange={(e) => {
-        setStatusFilter(e.target.value);
-        setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
-    }}
->
-    <option value="">Todos</option>
-    <option value="true">Activo</option>
-    <option value="false">Inactivo</option>
-</select>
-
-</div>
-                    </div>
-
-
+                            {/* 2. SELECT (Estado) */}
+                            <select 
+                                className="estado-select"
+                                value={statusFilter}
+                                onChange={(e) => {
+                                    setStatusFilter(e.target.value);
+                                    setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
+                                }}
+                            >
+                                <option value="">Todos</option>
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                        </div>
 
                     {loading && <p style={{textAlign: 'center', padding: '20px'}}>Cargando datos...</p>}
                     
-                    
-                             {/* RENDERIZADO SEGURO DE LA LISTA */}
-                                {!loading && Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
-                                      filteredProducts.map((prod) => (
-                             <div className="content-message" key={prod.id || Math.random()} style={{borderLeft: '5px solid #646cff'}}>
-                                <h3 className="card-title">
-                                    <strong>{prod.sku || 'SIN SKU'} - {prod.name || 'Sin Nombre'}</strong>
-                                </h3>
-                                <p className="card-text">
-                                    Precio: <strong>${prod.currentUnitPrice || 0}</strong> | 
-                                    Stock: <strong>{prod.stockQuantity || 0}</strong> | 
-                                    Estado: {prod.isActive ? "Activo" : "Inactivo"}
-                                </p>
+                    {!loading && Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+                        filteredProducts.map((prod) => (
+                            <div className="content-message" key={prod.id || Math.random()} 
+                                style={{
+                                    borderLeft: '5px solid #646cff',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                
+                                {/* 1. Información a la izquierda */}
+                                <div>
+                                    <h3 className="card-title" style={{ margin: 0 }}>
+                                        <strong>{prod.sku || 'SIN SKU'} - {prod.name || 'Sin Nombre'}</strong>
+                                    </h3>
+                                    <p className="card-text">
+                                        Precio: <strong>${prod.currentUnitPrice || 0}</strong> | 
+                                        Stock: <strong>{prod.stockQuantity || 0}</strong> | 
+                                        Estado: {prod.isActive ? "Activo" : "Inactivo"}
+                                    </p>
+                                </div>
+
+                                {/* 2. Botón a la derecha */}
+                                <button
+                                    className="product-button boton-oculto-mobile"
+                                    style={{ marginLeft: '10px' }}
+                                    onClick={() => setSelectedProduct(prod)}
+                                >
+                                    Ver
+                                </button>
                             </div>
-    ))
-) : (
-    !loading && <p>No se encontraron productos.</p>
-)}
+                        ))
+                    ) : (
+                        !loading && <p>No se encontraron productos.</p>
+                    )}
 
 
                     {/* Componente Paginación */}
@@ -312,6 +315,7 @@ const filteredProducts = products.filter(prod => {
                         totalPages={totalPages} 
                         onPageChange={handlePageChange} 
                     /> 
+                </div>
                 </>
             )}
 
@@ -319,72 +323,82 @@ const filteredProducts = products.filter(prod => {
             {activeSection === 'Ordenes' && (
                 <>
                    <div className='content-message'>
-
-                  
-                   <div className="fila-superior">
+                       <div className="fila-superior">
                             <h3 className="card-title"><strong>Gestión de Ordenes</strong></h3>
-                            
                         </div>
                         <div className="fila-inferior">
     
-    {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
-    <div className="search-container">
-        <input 
-            type="text" 
-            placeholder="Buscar orden..." 
-            className="search-input" // 💡 Usamos la clase nueva
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            // Opcional: Permitir buscar al dar Enter
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    // Aquí podrías llamar a una función de búsqueda si no fuera automática
-                    console.log("Buscar: ", searchTerm);
-                }
-            }}
-        />
-        
-        
-    </div>
+                            {/* 1. CONTENEDOR DE BÚSQUEDA (Input + Botón) */}
+                            <div className="search-container">
+                                <input 
+                                    type="text" 
+                                    placeholder="Buscar orden..." 
+                                    className="search-input"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            console.log("Buscar: ", searchTerm);
+                                        }
+                                    }}
+                                />
+                            </div>
 
-    {/* 2. SELECT (Estado) */}
-    {/* Asegúrate de que este select tenga sus clases o estilos también */}
-   <select
-        className="estado-select"
-        value={orderStatusFilter}
-        onChange={(e) => {
-            setOrderStatusFilter(e.target.value);
-            setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
-        }}
-    >
-        <option value="">Todas las Órdenes</option>
-        <option value="0">(Pendiente)</option>
-        <option value="1">(Procesando)</option>
-        <option value="2">(Enviado)</option>
-        <option value="3">(Entregado)</option>
-        <option value="4">(Cancelado)</option>
-    </select>
+                            {/* 2. SELECT (Estado) */}
+                            <select
+                                className="estado-select"
+                                value={orderStatusFilter}
+                                onChange={(e) => {
+                                    setOrderStatusFilter(e.target.value);
+                                    setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
+                                }}
+                            >
+                                <option value="">Todas las Órdenes</option>
+                                <option value="0">(Pendiente)</option>
+                                <option value="1">(Procesando)</option>
+                                <option value="2">(Enviado)</option>
+                                <option value="3">(Entregado)</option>
+                                <option value="4">(Cancelado)</option>
+                            </select>
+                        </div>
+                    </div>
 
-</div>
- </div>
-
+                    {/* LISTA DE ORDENES CON BOTÓN VER */}
                     {!loading && Array.isArray(orders) && orders.length > 0 ? (
                         orders.map((order) => (
-                            <div className="content-message" key={order.id || Math.random()}>
-                                <h3 className="card-title">
-                                    <strong>Orden #{order.id ? order.id.toString().substring(0, 8) : "N/A"}...</strong> 
-                                    <span className="card-value" style={{fontSize: '0.8em', marginLeft: '10px'}}>
-                                        ${order.totalAmount}
-                                    </span>
-                                </h3>
-                                <p className="card-text">Estado: <strong>{order.status || "Pending"}</strong></p>
+                            <div className="content-message" key={order.id || Math.random()}
+                                style={{
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center'
+                                }}>
+                                
+                                {/* IZQUIERDA: Textos */}
+                                <div>
+                                    <h3 className="card-title" style={{ margin: 0 }}>
+                                        <strong>Orden #{order.id ? order.id.toString().substring(0, 8) : "N/A"}...</strong> 
+                                        <span className="card-value" style={{fontSize: '0.8em', marginLeft: '10px'}}>
+                                            ${order.totalAmount}
+                                        </span>
+                                    </h3>
+                                    <p className="card-text">Estado: <strong>{order.status || "Pending"}</strong></p>
+                                </div>
+
+                                {/* DERECHA: Botón */}
+                                <button 
+                                    className="product-button" 
+                                    style={{ marginLeft: '10px' }}
+                                    onClick={() => setSelectedProduct(order)}
+                                >
+                                    Ver
+                                </button>
                             </div>
                         ))
                     ) : (
                         !loading && <p>No hay ordenes registradas.</p>
                     )}
 
-                      {/* Componente Paginación */}
+                    {/* Componente Paginación */}
                     <Pagination 
                         currentPage={currentPage} 
                         totalPages={totalPages} 
@@ -406,7 +420,10 @@ const filteredProducts = products.filter(prod => {
                     />
                 </div>
             )}
-            
+            <ProductDetailModal 
+                item={selectedProduct} 
+                onClose={closeModal} 
+            />
         </main>
         </div>
     );
