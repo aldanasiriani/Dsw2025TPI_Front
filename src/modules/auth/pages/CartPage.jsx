@@ -1,21 +1,16 @@
-
 import React, { useState } from 'react';
 import { useCart } from '../../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
-import '../shared/dashboard.css';
+import '../shared/dashboard.css'; // Asegúrate de importar donde pusiste el header
+import '../shared/home.css';      // 💡 Importamos los estilos nuevos
 import { createOrder } from '../services/orderService'; 
-
-
+import { FaShoppingCart, FaTrash } from 'react-icons/fa'; 
 
 const CartPage = () => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false); 
-  
-  // 1. NUEVO ESTADO: Para guardar errores específicos de cada producto
   const [stockErrors, setStockErrors] = useState({}); 
-
-  // Estados de dirección
   const [shippingAddress, setShippingAddress] = useState("");
   const [billingAddress, setBillingAddress] = useState("");
 
@@ -28,184 +23,146 @@ const CartPage = () => {
     return total.toFixed(2); 
   };
 
+  const handleIncrease = (item) => {
+      updateQuantity(item.id, item.quantity + 1);
+  };
+
+  const handleDecrease = (item) => {
+      if (item.quantity > 1) {
+          updateQuantity(item.id, item.quantity - 1);
+      }
+  };
+
   const handleFinalizePurchase = async () => {
-    const token = localStorage.getItem('token');
-    
-    // Limpiamos errores previos al intentar de nuevo
-    setStockErrors({}); 
+      const token = localStorage.getItem('token');
+      setStockErrors({}); 
 
-    if (!token) {
-        const confirmLogin = window.confirm("Necesitas iniciar sesión para finalizar tu compra. ¿Quieres ir al Login?");
-        if (confirmLogin) {
-            navigate('/login', { state: { from: '/cart', role: 'client' } }); 
-        }
-        return;
-    }
+      if (!token) {
+          if(window.confirm("Necesitas iniciar sesión para finalizar. ¿Ir al login?")) navigate('/login');
+          return;
+      }
+      if (!shippingAddress.trim()) { alert("Falta la dirección de envío"); return; }
 
-    if (!shippingAddress.trim() || !billingAddress.trim()) {
-        alert("Por favor, completa las direcciones de envío y facturación.");
-        return;
-    }
-
-    try {
+      try {
         setIsProcessing(true); 
         await createOrder(cart, shippingAddress, billingAddress);
-        
-        alert("¡Compra realizada con éxito! Muchas gracias.");
+        alert("¡Compra realizada con éxito!");
         clearCart(); 
         navigate('/products'); 
-
-    } catch (error) {
-        console.error(error);
-        const errorMsg = error.message || "";
-
-        // 2. LÓGICA INTELIGENTE DE ERRORES
-        // Si el error es de Stock, buscamos qué producto fue
-        if (errorMsg.includes("Stock insuficiente")) {
-            
-            const newErrors = {};
-            let productFound = false;
-
-            // Revisamos cada item del carrito a ver si su nombre está en el error
-            cart.forEach(item => {
-                // Backend dice: "...producto sandia..."
-                // Chequeamos si el nombre del item está incluido en el mensaje de error
-                if (errorMsg.toLowerCase().includes(item.name.toLowerCase())) {
-                    newErrors[item.id] = "¡No hay suficiente stock!";
-                    productFound = true;
-                }
-            });
-
-            if (productFound) {
-                setStockErrors(newErrors);
-                // Opcional: No mostramos alert, o mostramos uno suave
-                // alert("Por favor revisa los productos marcados."); 
-            } else {
-                // Si dice stock insuficiente pero no encontramos el nombre exacto, mostramos el alert
-                alert("Error de Stock: " + errorMsg);
-            }
-
-        } else {
-            // Si es otro error (ej: base de datos, conexión), mostramos el alert normal
-            alert("Error al procesar la compra: \n" + errorMsg);
-        }
-
-    } finally {
+      } catch (error) {
+         console.error(error);
+         alert("Error: " + error.message);
+      } finally {
         setIsProcessing(false); 
-    }
+      }
   };
 
   return (
-    <div className="dashboard-grid-container" style={{ display: 'block', minHeight: '100vh' }}>
+    <div className="customer-page-container">
       
-      <header className="dashboard-header" style={{ position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 className="header-title" style={{cursor:'pointer'}} onClick={() => navigate('/')}>Mi Tienda</h1>
-        <button className="product-button" onClick={() => navigate('/')}>Seguir Comprando</button>
+      {/* HEADER (Usa estilos de site-header en home.css) */}
+      <header className="site-header">
+       <div className="header-brand" onClick={() => navigate('/products')}>
+            <FaShoppingCart className="header-logo-icon" />
+            <h1 className="header-title">Mi Carrito</h1>
+        </div>
+        <div className="header-actions">
+            <button className="header-btn btn-seguir" onClick={() => navigate('/products')}>
+                Seguir Comprando
+            </button>
+        </div>
       </header>
 
-      <main className="dashboard-main-content" style={{ padding: '20px' }}>
-        <h2 style={{ marginBottom: '20px' }}>Tu Carrito de Compras</h2>
-
+      <main className="dashboard-main-content">
+      
         {cart.length === 0 ? (
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
+          <div className="cart-empty-state">
             <h3>Tu carrito está vacío 🛒</h3>
             <p>¡Agrega algunos productos para empezar!</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+          <div className="cart-layout-grid">
             
-            {/* LISTA DE ITEMS */}
-            <div style={{ flex: 2, minWidth: '300px' }}>
+            {/* --- LISTA DE ITEMS --- */}
+            <div className="cart-list-section">
               {cart.map((item) => {
                 const unitPrice = parseFloat(item.currentUnitPrice) || 0;
                 const qty = item.quantity || 1;
                 const subtotal = (unitPrice * qty).toFixed(2);
-                
-                // Chequeamos si este item tiene error
                 const errorMessage = stockErrors[item.id]; 
 
                 return (
-                    <div key={item.id} className="content-message" 
-                         style={{ 
-                             display: 'flex', 
-                             justifyContent: 'space-between', 
-                             alignItems: 'center',
-                             // Si hay error, le ponemos borde rojo para resaltar
-                             border: errorMessage ? '2px solid #ef4444' : '1px solid #eee'
-                         }}>
-                    <div>
-                        <h3 className="card-title"><strong>{item.name}</strong></h3>
-                        <p className="card-text">Precio unitario: ${unitPrice}</p>
-                        <p className="card-text">Cantidad: {qty}</p>
-                        
-                        {/* 3. AQUÍ MOSTRAMOS EL MENSAJE ROJO */}
-                        {errorMessage && (
-                            <p style={{ color: '#ef4444', fontWeight: 'bold', marginTop: '5px' }}>
-                                ⚠️ {errorMessage}
-                            </p>
-                        )}
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontWeight: 'bold', fontSize: '1.2em' }}>${subtotal}</p>
-                        <button 
-                        onClick={() => removeFromCart(item.id)}
-                        style={{ background: '#ff4d4f', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', marginTop: '5px' }}
-                        >
-                        Eliminar
-                        </button>
-                    </div>
+                    <div key={item.id} className={`cart-item-card ${errorMessage ? 'has-error' : ''}`}>
+                    
+                        {/* Info Izquierda */}
+                        <div className="cart-info-container">
+                            <h3 className="cart-product-title">{item.name}</h3>
+                            <p className="cart-product-price">Precio unitario: ${unitPrice}</p>
+                            {errorMessage && <p className="cart-error-msg">⚠️ {errorMessage}</p>}
+                        </div>
+
+                        {/* Botones Cantidad */}
+                        <div className="cart-qty-selector">
+                            <button className="cart-qty-btn" onClick={() => handleDecrease(item)}>−</button>
+                            <span className="cart-qty-value">{qty}</span>
+                            <button className="cart-qty-btn" onClick={() => handleIncrease(item)}>+</button>
+                        </div>
+
+                        {/* Info Derecha (Subtotal + Borrar) */}
+                        <div className="cart-actions-container">
+                            <p className="cart-item-subtotal">${subtotal}</p>
+                            <button className="cart-btn-delete" onClick={() => removeFromCart(item.id)}>
+                                <FaTrash /> Eliminar
+                            </button>
+                        </div>
                     </div>
                 );
               })}
               
-              <button onClick={clearCart} style={{ marginTop: '10px', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
-                Vaciar Carrito
-              </button>
+              <div className="cart-footer-actions">
+                  <button className="cart-btn-clear" onClick={clearCart}>
+                    Vaciar Carrito Completamente
+                  </button>
+              </div>
             </div>
 
-            {/* RESUMEN DE COMPRA */}
-            <div style={{ flex: 1, minWidth: '300px' }}>
-              <div className="content-message" style={{ borderLeft: '5px solid #10b981' }}>
-                <h3 className="card-title"><strong>Resumen del Pedido</strong></h3>
-                <hr style={{ margin: '10px 0', borderColor: '#eee' }} />
+            {/* --- RESUMEN DE COMPRA --- */}
+            <div className="cart-summary-section">
+              <div className="cart-summary-card">
+                <h3 className="cart-summary-title">Resumen del Pedido</h3>
+                <hr className="cart-divider" />
                 
-                {/* Inputs de dirección */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>Dirección de Envío:</label>
+                <div className="cart-input-group">
+                    <label className="cart-input-label">Dirección de Envío:</label>
                     <input 
                         type="text" 
+                        className="cart-input-field"
                         placeholder="Calle 123, Ciudad"
                         value={shippingAddress}
                         onChange={(e) => setShippingAddress(e.target.value)}
-                        style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
                     />
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
-                    <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>Dirección de Cobro:</label>
+                <div className="cart-input-group">
+                    <label className="cart-input-label">Dirección de Cobro:</label>
                     <input 
                         type="text" 
+                        className="cart-input-field"
                         placeholder="Igual a envío..."
                         value={billingAddress}
                         onChange={(e) => setBillingAddress(e.target.value)}
-                        style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
                     />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <span>Productos:</span>
-                  <span>{cart.length}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.5em', fontWeight: 'bold' }}>
+                <div className="cart-total-row">
                   <span>Total:</span>
                   <span>${calculateTotal()}</span>
                 </div>
                 
                 <button 
-                  className="product-button" 
-                  style={{ width: '100%', marginTop: '20px', fontSize: '1.1em', justifyContent: 'center', opacity: isProcessing ? 0.7 : 1 }}
-                  onClick={handleFinalizePurchase}
-                  disabled={isProcessing} 
+                  className="cart-btn-checkout" 
+                  onClick={handleFinalizePurchase} 
+                  disabled={isProcessing}
                 >
                   {isProcessing ? 'Procesando...' : 'Confirmar Compra'}
                 </button>

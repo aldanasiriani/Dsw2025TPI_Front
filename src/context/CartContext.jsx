@@ -55,9 +55,20 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = () => setCart([]);
-
+// Función para actualizar cantidad directamente
+const updateQuantity = (id, newQuantity) => {
+    setCart((prevCart) => {
+        return prevCart.map((item) => {
+            if (item.id === id) {
+                // Evitamos que baje de 1
+                return { ...item, quantity: Math.max(1, newQuantity) }; 
+            }
+            return item;
+        });
+    });
+};
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity}}>
       {children}
     </CartContext.Provider>
   );

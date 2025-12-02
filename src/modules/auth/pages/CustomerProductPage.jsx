@@ -4,16 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../context/CartContext'; 
 import api from '../services/api'; 
 import '../shared/dashboard.css'; 
-import Footer from '../components/Footer';
-import { FaStore, FaShoppingCart, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa'; // Iconos para el header
-import '../shared/Header.css'; // Importamos los estilos nuevos del Header
+import '../shared/home.css'; // 💡 Aquí están los estilos del sidebar móvil
 
+import { 
+    FaStore, FaShoppingCart, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaBars, FaTimes,
+    FaMapMarkerAlt, FaEnvelope, FaPhone 
+} from 'react-icons/fa'; 
 
 const CustomerProductPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); 
-  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const navigate = useNavigate();
   const { cart } = useCart(); 
 
@@ -22,11 +25,12 @@ const CustomerProductPage = () => {
     window.location.reload(); 
   };
 
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await api.get('/products'); 
-        
         if (response.data && response.data.items) {
              setProducts(response.data.items);
         } else if (Array.isArray(response.data)) {
@@ -40,7 +44,6 @@ const CustomerProductPage = () => {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
@@ -54,42 +57,33 @@ const CustomerProductPage = () => {
   const isLoggedIn = !!localStorage.getItem('token');
 
   return (
-    <div className="customer-page-container" style={{ minHeight: '100vh', background: '#f3f4f6', display: 'flex', flexDirection: 'column' }}>
+    <div className="customer-page-container">
       
-      {/* --- HEADER NUEVO Y PROFESIONAL --- */}
+      {/* --- HEADER --- */}
       <header className="site-header">
         
-        {/* 1. LOGO Y MARCA (Izquierda) */}
-        <div className="header-brand" onClick={() => { setSearchTerm(""); navigate('/'); }} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-            {/* Icono */}
-            <FaStore className="header-logo-icon" style={{ fontSize: '2rem', color: '#646cff' }} />
-            
-            {/* Texto "Mi Tienda Real" CON ESTILOS PARA QUE SE VEA */}
-            <h1 className="header-title" style={{ 
-                margin: '0 0 0 10px', 
-                fontSize: '1.5rem', 
-                fontWeight: 'bold', 
-                color: '#e5e7eb',    // Color blanco/gris claro para que resalte en el fondo oscuro
-                whiteSpace: 'nowrap' // Evita que el texto se baje de línea
-            }}>
-                Mi Tienda Real
-            </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* 💡 CORRECCIÓN: Usamos la clase 'customer-menu-btn' del home.css */}
+            <button className="customer-menu-btn" onClick={toggleSidebar}>
+                <FaBars />
+            </button>
+
+            <div className="header-brand" onClick={() => { setSearchTerm(""); navigate('/'); }} >
+                <FaStore className="header-logo-icon"  />
+                <h1 className="header-title">Mi Tienda Real</h1>
+            </div>
         </div>
 
-
-
-        {/* 2. BUSCADOR CENTRAL (Grande tipo MercadoLibre) */}
         <div className="header-search-container">
             <input 
                 type="text" 
                 className="header-search-input"
-                placeholder="🔍 Buscar productos, marcas y más..." 
+                placeholder="🔍 Buscar productos..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
         </div>
 
-        {/* 3. ACCIONES (Derecha) */}
         <div className="header-actions">
             <button className="header-btn btn-cart" onClick={() => navigate('/cart')}>
                 <FaShoppingCart /> Carrito ({cart.length})
@@ -111,9 +105,55 @@ const CustomerProductPage = () => {
             )}
         </div>
       </header>
-      {/* ---------------------------------- */}
+
+     {/* --- SIDEBAR MÓVIL --- */}
+      <aside className={`customer-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div className="sidebar-header">
+              {/* 💡 CAMBIO AQUÍ: Quitamos el style={{...}} inline */}
+              <h2 className="sidebar-title">Menú</h2>
+              
+              <button className="btn-close-sidebar" onClick={toggleSidebar}>
+                  <FaTimes />
+              </button>
+          </div>
+
+          <nav className="sidebar-nav">
+              {/* ... el resto de los botones sigue igual ... */}
+              <button onClick={() => { navigate('/'); toggleSidebar(); }} className="sidebar-link active">
+                  <FaStore /> Inicio
+              </button>
+              
+              <button onClick={() => { navigate('/cart'); toggleSidebar(); }} className="sidebar-link">
+                  <FaShoppingCart /> Ver Carrito <span style={{fontWeight:'bold', marginLeft:'auto'}}>({cart.length})</span>
+              </button>
+
+              <div className="sidebar-divider"></div>
+              {/* ... resto del código ... */}
+
+              <div className="sidebar-divider"></div>
+
+              {isLoggedIn ? (
+                  <button onClick={handleLogout} className="sidebar-link logout">
+                      <FaSignOutAlt /> Cerrar Sesión
+                  </button>
+              ) : (
+                  <>
+                      <button onClick={() => { navigate('/login'); toggleSidebar(); }} className="sidebar-link">
+                          <FaSignInAlt /> Iniciar Sesión
+                      </button>
+                      <button onClick={() => { navigate('/register'); toggleSidebar(); }} className="sidebar-link">
+                          <FaUserPlus /> Registrarse
+                      </button>
+                  </>
+              )}
+          </nav>
+      </aside>
+
+      {/* OVERLAY */}
+      {isSidebarOpen && <div className="customer-overlay" onClick={toggleSidebar}></div>}
 
 
+      {/* --- MAIN CONTENT --- */}
       <main style={{ padding: '40px 30px', maxWidth: '1200px', margin: '0 auto', width: '100%', flex: '1' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
@@ -150,7 +190,29 @@ const CustomerProductPage = () => {
         )}
       </main>
 
-      <Footer />
+      {/* --- FOOTER INTEGRADO --- */}
+      <footer className="site-footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h3>Mi Tienda Real</h3>
+            <p>
+              Ofrecemos los mejores productos con la mejor calidad del mercado. 
+              Comprometidos con la satisfacción de nuestros clientes desde 2025.
+            </p>
+          </div>
+          <div className="footer-section">
+            <h3>Contáctanos</h3>
+            <ul className="footer-links">
+              <li><FaMapMarkerAlt style={{ marginRight: '8px' }} /> Rivadavia 1050, Tucumán</li>
+              <li><FaPhone style={{ marginRight: '8px' }} /> +54 9 381 123 4567</li>
+              <li><FaEnvelope style={{ marginRight: '8px' }} /> contacto@mitiendareal.com</li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          &copy; {new Date().getFullYear()} Mi Tienda Real. Todos los derechos reservados.
+        </div>
+      </footer>
       
     </div>
   );

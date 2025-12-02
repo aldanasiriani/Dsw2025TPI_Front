@@ -93,24 +93,30 @@
     width: 100%;
 }
 
-/* ================================================= */
-/* MEDIA QUERIES (MÓVIL)                             */
-/* ================================================= */
 
-@media (max-width: 480px) {
+/* MEDIA QUERY (MÓVIL)      */
+
+@media (max-width: 768px) {
     .auth-card {
-        max-width: 100%;
-        margin: 0;
-        border-radius: 0; /* En móviles muy chicos, quitamos bordes */
-        box-shadow: none; /* Quitamos sombra para diseño plano */
-        padding: 1.5rem;
-        height: 100vh; /* Ocupa toda la pantalla */
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* Centrar contenido verticalmente */
+    
+        width: 90%;        
+        margin: 2rem auto; 
+        
+        height: auto;      
+        
+     
+        padding: 1.5rem;   
+
+     
+        background-color: white;
+        border-radius: 20px; 
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+        border: 1px solid #f3f4f6;
     }
 
     .auth-title {
-        font-size: 1.75rem; /* Título un poco más grande en móvil */
+        font-size: 1.5rem; 
+        text-align: center; 
+        margin-bottom: 1.5rem;
     }
 }

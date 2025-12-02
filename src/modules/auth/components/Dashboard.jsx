@@ -270,17 +270,14 @@ function Dashboard() {
                             </select>
                         </div>
 
+                </div>
+                
                     {loading && <p style={{textAlign: 'center', padding: '20px'}}>Cargando datos...</p>}
                     
                     {!loading && Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
                         filteredProducts.map((prod) => (
                             <div className="content-message" key={prod.id || Math.random()} 
-                                style={{
-                                    borderLeft: '5px solid #646cff',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
+                               >
                                 
                                 {/* 1. Información a la izquierda */}
                                 <div>
@@ -296,8 +293,8 @@ function Dashboard() {
 
                                 {/* 2. Botón a la derecha */}
                                 <button
-                                    className="product-button boton-oculto-mobile"
-                                    style={{ marginLeft: '10px' }}
+                                    className="product-button ver"
+                                    
                                     onClick={() => setSelectedProduct(prod)}
                                 >
                                     Ver
@@ -315,7 +312,6 @@ function Dashboard() {
                         totalPages={totalPages} 
                         onPageChange={handlePageChange} 
                     /> 
-                </div>
                 </>
             )}
 
@@ -367,31 +363,28 @@ function Dashboard() {
                     {!loading && Array.isArray(orders) && orders.length > 0 ? (
                         orders.map((order) => (
                             <div className="content-message" key={order.id || Math.random()}
-                                style={{
-                                    display: 'flex', 
-                                    justifyContent: 'space-between', 
-                                    alignItems: 'center'
-                                }}>
+                               >
                                 
                                 {/* IZQUIERDA: Textos */}
-                                <div>
+                                <div className='order-card'>
                                     <h3 className="card-title" style={{ margin: 0 }}>
                                         <strong>Orden #{order.id ? order.id.toString().substring(0, 8) : "N/A"}...</strong> 
-                                        <span className="card-value" style={{fontSize: '0.8em', marginLeft: '10px'}}>
+                                        <span className="card-value">
                                             ${order.totalAmount}
                                         </span>
                                     </h3>
                                     <p className="card-text">Estado: <strong>{order.status || "Pending"}</strong></p>
-                                </div>
-
                                 {/* DERECHA: Botón */}
                                 <button 
-                                    className="product-button" 
-                                    style={{ marginLeft: '10px' }}
+                                    className="product-button ver" 
+                                    
                                     onClick={() => setSelectedProduct(order)}
                                 >
                                     Ver
                                 </button>
+                                </div>
+
+                                
                             </div>
                         ))
                     ) : (
