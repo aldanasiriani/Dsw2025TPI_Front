@@ -6,12 +6,16 @@ import '../shared/dashboard.css';
 import { createOrder } from '../services/orderService'; 
 
 
+
 const CartPage = () => {
   const { cart, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false); 
   
-  // --- NUEVOS ESTADOS PARA DIRECCIONES ---
+  // 1. NUEVO ESTADO: Para guardar errores específicos de cada producto
+  const [stockErrors, setStockErrors] = useState({}); 
+
+  // Estados de dirección
   const [shippingAddress, setShippingAddress] = useState("");
   const [billingAddress, setBillingAddress] = useState("");
 
@@ -26,8 +30,10 @@ const CartPage = () => {
 
   const handleFinalizePurchase = async () => {
     const token = localStorage.getItem('token');
+    
+    // Limpiamos errores previos al intentar de nuevo
+    setStockErrors({}); 
 
-    // Validación 1: Login
     if (!token) {
         const confirmLogin = window.confirm("Necesitas iniciar sesión para finalizar tu compra. ¿Quieres ir al Login?");
         if (confirmLogin) {
@@ -36,7 +42,6 @@ const CartPage = () => {
         return;
     }
 
-    // Validación 2: Direcciones (Requeridas por el Backend)
     if (!shippingAddress.trim() || !billingAddress.trim()) {
         alert("Por favor, completa las direcciones de envío y facturación.");
         return;
@@ -44,8 +49,6 @@ const CartPage = () => {
 
     try {
         setIsProcessing(true); 
-        
-        // Llamamos al servicio pasando los nuevos datos
         await createOrder(cart, shippingAddress, billingAddress);
         
         alert("¡Compra realizada con éxito! Muchas gracias.");
@@ -54,7 +57,39 @@ const CartPage = () => {
 
     } catch (error) {
         console.error(error);
-        alert("Error al procesar la compra: \n" + error.message);
+        const errorMsg = error.message || "";
+
+        // 2. LÓGICA INTELIGENTE DE ERRORES
+        // Si el error es de Stock, buscamos qué producto fue
+        if (errorMsg.includes("Stock insuficiente")) {
+            
+            const newErrors = {};
+            let productFound = false;
+
+            // Revisamos cada item del carrito a ver si su nombre está en el error
+            cart.forEach(item => {
+                // Backend dice: "...producto sandia..."
+                // Chequeamos si el nombre del item está incluido en el mensaje de error
+                if (errorMsg.toLowerCase().includes(item.name.toLowerCase())) {
+                    newErrors[item.id] = "¡No hay suficiente stock!";
+                    productFound = true;
+                }
+            });
+
+            if (productFound) {
+                setStockErrors(newErrors);
+                // Opcional: No mostramos alert, o mostramos uno suave
+                // alert("Por favor revisa los productos marcados."); 
+            } else {
+                // Si dice stock insuficiente pero no encontramos el nombre exacto, mostramos el alert
+                alert("Error de Stock: " + errorMsg);
+            }
+
+        } else {
+            // Si es otro error (ej: base de datos, conexión), mostramos el alert normal
+            alert("Error al procesar la compra: \n" + errorMsg);
+        }
+
     } finally {
         setIsProcessing(false); 
     }
@@ -79,19 +114,36 @@ const CartPage = () => {
         ) : (
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             
-            {/* IZQUIERDA: LISTA DE ITEMS */}
+            {/* LISTA DE ITEMS */}
             <div style={{ flex: 2, minWidth: '300px' }}>
               {cart.map((item) => {
                 const unitPrice = parseFloat(item.currentUnitPrice) || 0;
                 const qty = item.quantity || 1;
                 const subtotal = (unitPrice * qty).toFixed(2);
+                
+                // Chequeamos si este item tiene error
+                const errorMessage = stockErrors[item.id]; 
 
                 return (
-                    <div key={item.id} className="content-message" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={item.id} className="content-message" 
+                         style={{ 
+                             display: 'flex', 
+                             justifyContent: 'space-between', 
+                             alignItems: 'center',
+                             // Si hay error, le ponemos borde rojo para resaltar
+                             border: errorMessage ? '2px solid #ef4444' : '1px solid #eee'
+                         }}>
                     <div>
                         <h3 className="card-title"><strong>{item.name}</strong></h3>
                         <p className="card-text">Precio unitario: ${unitPrice}</p>
                         <p className="card-text">Cantidad: {qty}</p>
+                        
+                        {/* 3. AQUÍ MOSTRAMOS EL MENSAJE ROJO */}
+                        {errorMessage && (
+                            <p style={{ color: '#ef4444', fontWeight: 'bold', marginTop: '5px' }}>
+                                ⚠️ {errorMessage}
+                            </p>
+                        )}
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <p style={{ fontWeight: 'bold', fontSize: '1.2em' }}>${subtotal}</p>
@@ -111,13 +163,13 @@ const CartPage = () => {
               </button>
             </div>
 
-            {/* DERECHA: RESUMEN Y DATOS */}
+            {/* RESUMEN DE COMPRA */}
             <div style={{ flex: 1, minWidth: '300px' }}>
               <div className="content-message" style={{ borderLeft: '5px solid #10b981' }}>
                 <h3 className="card-title"><strong>Resumen del Pedido</strong></h3>
                 <hr style={{ margin: '10px 0', borderColor: '#eee' }} />
                 
-                {/* --- INPUTS DE DIRECCIÓN --- */}
+                {/* Inputs de dirección */}
                 <div style={{ marginBottom: '15px' }}>
                     <label style={{display:'block', marginBottom:'5px', fontWeight:'bold'}}>Dirección de Envío:</label>
                     <input 
@@ -139,7 +191,6 @@ const CartPage = () => {
                         style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
                     />
                 </div>
-                {/* ------------------------- */}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <span>Productos:</span>

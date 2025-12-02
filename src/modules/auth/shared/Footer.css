@@ -1,0 +1,91 @@
+/* src/shared/Footer.css */
+
+.site-footer {
+    background-color: #1f2937; /* Gris oscuro elegante */
+    color: #e5e7eb; /* Texto gris claro para leer bien */
+    padding: 40px 20px;
+    margin-top: auto; /* Empuja el footer al fondo si hay poco contenido */
+    font-family: sans-serif;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-section h3 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #646cff; /* Tu color violeta de marca */
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.footer-section p {
+    line-height: 1.6;
+    color: #9ca3af;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #d1d5db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #646cff; /* Efecto hover violeta */
+    padding-left: 5px; /* Pequeña animación */
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-icon {
+    font-size: 1.5rem;
+    color: #fff;
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.social-icon:hover {
+    color: #646cff;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #374151;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Responsivo para celulares */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+    }
+}

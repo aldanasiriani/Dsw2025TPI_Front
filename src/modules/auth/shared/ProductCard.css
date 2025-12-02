@@ -110,3 +110,30 @@
 .btn-add:hover {
   background-color: #d8b4fe;
 }
+
+
+/* Estilo de la notificación */
+.simple-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #10b981; /* Verde éxito */
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    font-weight: 600;
+    font-size: 0.9rem;
+    
+    /* La Animación */
+    animation: fadeInOut 3s ease-in-out forwards;
+}
+
+/* Definimos la animación: Entra, espera, sale */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+}
