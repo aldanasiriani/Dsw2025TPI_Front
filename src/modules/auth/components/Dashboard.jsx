@@ -16,6 +16,9 @@ function Dashboard() {
     // Inicializamos SIEMPRE como arrays vacíos para evitar crash
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
+    // Filtro específico para Órdenes
+    const [orderStatusFilter, setOrderStatusFilter] = useState("");
+
     const [loading, setLoading] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState(""); 
@@ -93,29 +96,48 @@ function Dashboard() {
                 }
                 
                 // 2. LOGICA DE ORDENES
-                if (activeSection === 'Ordenes' || activeSection === 'Principal') {
-                    try {
-                        const response = await api.get('/orders');
-                        // Verificación segura
-                        setOrders(Array.isArray(response.data) ? response.data : []);
-                    } catch (e) {
-                        console.warn("No se pudieron cargar las ordenes", e);
-                        setOrders([]); 
-                    }
-                }
-                
-            } catch (error) {
-                console.error("Error crítico cargando datos:", error);
-                // En caso de error, aseguramos que sigan siendo arrays para que el .map no explote
-                setProducts([]); 
-                setOrders([]);
+            // 2. LOGICA DE ORDENES
+if (activeSection === 'Ordenes' || activeSection === 'Principal') {
+    try {
+        // Construimos URL base
+        let url = `/orders?page=${currentPage}&limit=${pageSize}`;
+        
+        // Si hay filtro de estado seleccionado, lo agregamos (ej: &status=1)
+        if (orderStatusFilter !== "") {
+            url += `&status=${orderStatusFilter}`;
+        }
+        
+        // Si quisieras filtrar por cliente logueado (opcional):
+        // const customerId = localStorage.getItem('customerId');
+        // if(customerId) url += `&customerId=${customerId}`;
+
+        const response = await api.get(url);
+        
+        // Mapeo seguro de la respuesta paginada
+        if (response.data && Array.isArray(response.data.items)) {
+             setOrders(response.data.items);
+             const count = response.data.totalCount;
+             const pages = Math.ceil(count / pageSize);
+             setTotalPages(pages > 0 ? pages : 1);
+        } else {
+             setOrders([]);
+        }
+
+    } catch (e) {
+        console.warn("Error cargando ordenes", e);
+        setOrders([]); 
+    }
+}
             } finally {
                 setLoading(false);
             }
+
+            
         };
 
-        fetchData();
-    }, [activeSection, currentPage, statusFilter]); // Se ejecuta al cambiar sección o página
+     // Cierra la función fetchData...
+    fetchData();
+}, [activeSection, currentPage, statusFilter, orderStatusFilter]); // <--- ¡Asegúrate de agregar orderStatusFilter aquí!
 
     // --- HANDLERS ---
     const getSidebarItemClass = (sectionName) => {
@@ -327,18 +349,21 @@ const filteredProducts = products.filter(prod => {
 
     {/* 2. SELECT (Estado) */}
     {/* Asegúrate de que este select tenga sus clases o estilos también */}
-    <select 
-    className="estado-select"
-    value={statusFilter}
-    onChange={(e) => {
-        setStatusFilter(e.target.value);
-        setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
-    }}
->
-    <option value="">Todos</option>
-    <option value="true">Activo</option>
-    <option value="false">Inactivo</option>
-</select>
+   <select
+        className="estado-select"
+        value={orderStatusFilter}
+        onChange={(e) => {
+            setOrderStatusFilter(e.target.value);
+            setCurrentPage(1); // Importante: Volver a pág 1 al filtrar
+        }}
+    >
+        <option value="">Todas las Órdenes</option>
+        <option value="0">(Pendiente)</option>
+        <option value="1">(Procesando)</option>
+        <option value="2">(Enviado)</option>
+        <option value="3">(Entregado)</option>
+        <option value="4">(Cancelado)</option>
+    </select>
 
 </div>
  </div>
