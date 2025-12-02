@@ -48,3 +48,26 @@ export const createProduct = async (productData) => {
 
     return await response.json();
 };
+
+// --- FUNCIÓN 3: ACTUALIZAR PRODUCTO ---
+export const updateProduct = async (id, productData) => {
+    const token = localStorage.getItem('token'); 
+
+    // La URL suele ser: /api/products/{id}
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(productData)
+    });
+
+    if (!response.ok) {
+        if (response.status === 401) throw new Error("No autorizado.");
+        const errorData = await response.text();
+        throw new Error(errorData || 'Error al actualizar el producto');
+    }
+
+    return await response.json();
+};
