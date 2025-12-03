@@ -1,0 +1,674 @@
+.customer-page-container{
+    min-height:  100vh;
+    background: #f3f4f6;
+     display: flex;
+    flex-direction: column; 
+}
+/*HEADER*/
+
+
+.site-header {
+    background-color: #1f2937; /* El mismo gris oscuro elegante del footer */
+    color: #e5e7eb;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Asegura que quede por encima de todo */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- SECCIÓN MARCA / LOGO --- */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #e5e7eb;
+    transition: color 0.3s;
+}
+
+.header-brand:hover {
+    color: #fff;
+}
+
+.header-logo-icon {
+    font-size: 1.8rem;
+    color: #646cff; /* Color de acento (violeta) */
+}
+
+.header-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+     color: #e5e7eb;
+}
+
+/* --- SECCIÓN BUSCADOR --- */
+.header-search-container {
+    flex: 1; /* Ocupa el espacio disponible */
+    display: flex;
+    justify-content: center;
+    margin: 0 40px; /* Separación a los lados */
+}
+
+.header-search-input {
+    width: 100%;
+    max-width: 600px; /* Ancho máximo estilo ML */
+    padding: 12px 20px;
+    border-radius: 25px; /* Bordes muy redondeados */
+    border: 2px solid transparent;
+    background-color: #f3f4f6; /* Fondo claro para contraste */
+    color: #1f2937;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.header-search-input:focus {
+    background-color: #fff;
+    border-color: #646cff; /* Borde violeta al hacer click */
+    box-shadow: 0 0 0 4px rgba(100, 108, 255, 0.2);
+}
+
+/* --- SECCIÓN ACCIONES (BOTONES A LA DERECHA) --- */
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Estilo base para los botones del header */
+.header-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Botón Carrito */
+.btn-cart {
+    background-color: #374151; /* Un poco más claro que el fondo */
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+}
+.btn-cart:hover { background-color: #4b5563; color: #fff; }
+
+.btn-seguir{background-color: transparent; color: #e5e7eb; border: 1px solid #e5e7eb; }
+.btn-seguir:hover { background-color: #e5e7eb; color: #1f2937; }
+/* Botón Cerrar Sesión (Rojo) */
+.btn-logout { background-color: #dc2626; color: white; }
+.btn-logout:hover { background-color: #b91c1c; }
+
+/* Botón Iniciar Sesión (Transparente/Borde) */
+.btn-login { background-color: transparent; color: #e5e7eb; border: 1px solid #e5e7eb; }
+.btn-login:hover { background-color: #e5e7eb; color: #1f2937; }
+
+/* Botón Registrarse (Violeta) */
+.btn-register { background-color: #646cff; color: white; }
+.btn-register:hover { background-color: #535bf2; }
+
+
+/* Responsivo para celulares */
+@media (max-width: 768px) {
+    .site-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    .header-search-container {
+        width: 100%;
+        margin: 0;
+        order: 2; /* El buscador baja */
+    }
+    .header-brand {
+        order: 1;
+    }
+    .header-actions {
+        order: 1;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* FOOTER*/
+
+.site-footer {
+    background-color: #1f2937; /* Gris oscuro elegante */
+    color: #e5e7eb; /* Texto gris claro para leer bien */
+    padding: 40px 20px;
+    margin-top: auto; /* Empuja el footer al fondo si hay poco contenido */
+    font-family: sans-serif;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-section h3 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #646cff; /* Tu color violeta de marca */
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.footer-section p {
+    line-height: 1.6;
+    color: #9ca3af;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #d1d5db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #646cff; /* Efecto hover violeta */
+    padding-left: 5px; /* Pequeña animación */
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-icon {
+    font-size: 1.5rem;
+    color: #fff;
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.social-icon:hover {
+    color: #646cff;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #374151;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Responsivo para celulares */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+    }
+}
+
+/* CARRITO*/
+
+.customer-page-container .dashboard-main-content {
+    max-width: 100%; 
+    padding: 0 ;
+    width: 100%;
+}
+
+/* 2. LAYOUT DEL CARRITO (EXTENDIDO) */
+.cart-layout-grid {
+    display: flex;
+    justify-content: space-between; /* Clave: Empuja las columnas a los extremos */
+    align-items: flex-start;
+    
+    /* ANCHO: Ocupa casi toda la pantalla */
+    width: 96%; 
+    max-width: 1800px; /* Un límite muy grande para pantallas gigantes */
+    margin: 30px auto; /* Centrado */
+    gap: 40px; /* Espacio sólido entre la lista y el resumen */
+}
+
+/* 3. COLUMNA IZQUIERDA (PRODUCTOS) */
+.cart-list-section {
+    flex: 1; /* Ocupa todo el espacio disponible sobrante */
+    /* Esto hace que se estire hacia la izquierda y empuje al resumen a la derecha */
+}
+
+/* 4. COLUMNA DERECHA (RESUMEN) */
+.cart-summary-section {
+    width: 380px;   /* Le damos un ancho fijo sólido */
+    flex-shrink: 0; /* Evitamos que se aplaste */
+    position: sticky;
+    top: 100px;
+}
+
+/* AJUSTE PARA MÓVIL (Para que no se rompa en celulares) */
+@media (max-width: 1024px) {
+    .cart-layout-grid {
+        flex-direction: column; /* Poner uno debajo del otro en pantallas medianas/chicas */
+        width: 95%;
+    }
+    
+    .cart-summary-section {
+        width: 100%; /* En móvil el resumen ocupa todo el ancho */
+        position: static;
+    }
+}
+.cart-empty-state {
+    text-align: center;
+    margin-top: 50px;
+    color: #374151;
+}
+
+/* Contenedor Principal (Grid Layout) */
+
+
+
+
+/* Tarjeta de Producto Individual */
+.cart-item-card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    gap: 15px;
+    transition: border-color 0.2s;
+}
+
+/* Estado de error (Borde Rojo) */
+.cart-item-card.has-error {
+    border: 2px solid #ef4444;
+}
+
+/* Info del Producto (Izquierda) */
+.cart-info-container {
+    flex: 1;
+    min-width: 150px;
+}
+
+.cart-product-title {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.cart-product-price {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.cart-error-msg {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Selector de Cantidad (- 1 +) */
+.cart-qty-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+}
+
+.cart-qty-btn {
+    padding: 5px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #374151;
+    transition: background-color 0.2s;
+}
+
+.cart-qty-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.cart-qty-value {
+    padding: 0 10px;
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+    color: #1f2937;
+}
+
+/* Columna Derecha del Item (Subtotal y Borrar) */
+.cart-actions-container {
+    text-align: right;
+    min-width: 100px;
+}
+
+.cart-item-subtotal {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+    color: #1f2937;
+}
+
+.cart-btn-delete {
+    background: transparent;
+    color: #ef4444; /* Rojo */
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    padding: 5px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.cart-btn-delete:hover {
+    background-color: #fee2e2;
+}
+
+/* Botón Vaciar Carrito */
+.cart-footer-actions {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.cart-btn-clear {
+    text-decoration: underline;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.cart-btn-clear:hover {
+    color: #ef4444;
+}
+
+/* --- COLUMNA DERECHA: RESUMEN DE COMPRA --- */
+.cart-summary-section {
+    flex: 1;
+    min-width: 300px;
+    position: sticky;
+    top: 100px;
+}
+
+.cart-summary-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #646cff; /* Borde violeta */
+}
+
+.cart-summary-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: #1f2937;
+}
+
+.cart-divider {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Inputs del Resumen */
+.cart-input-group {
+    margin-bottom: 15px;
+}
+
+.cart-input-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.cart-input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.cart-input-field:focus {
+    border-color: #646cff;
+    box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
+}
+
+/* Total y Botón Finalizar */
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.cart-btn-checkout {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.cart-btn-checkout:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.cart-btn-checkout:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #a5a6f6;
+}
+
+/* SIDEBAR CUSTOMERPRODUCT*/
+/* ================================================= */
+/* ESTILOS DEL SIDEBAR MÓVIL (CustomerProductPage)   */
+/* ================================================= */
+
+/* Por defecto (PC), ocultamos cosas de móvil */
+.customer-menu-btn {
+    display: none;
+}
+
+.customer-sidebar {
+    display: none;
+}
+
+.customer-overlay {
+    display: none;
+}
+
+/* ================================================= */
+/* MEDIA QUERY (MÓVILES - < 768px)                   */
+/* ================================================= */
+
+/* --- ESTILOS SIDEBAR MÓVIL (Customer) --- */
+
+/* ================================================= */
+/* MEDIA QUERY (MÓVILES - < 768px) - ESTILO MEJORADO */
+/* ================================================= */
+
+@media (max-width: 768px) {
+    
+    /* 1. HEADER: Ajustes rápidos */
+    .site-header { padding: 10px 15px; gap: 10px; }
+    .header-actions { display: none; } /* Ocultar botones de escritorio */
+    .header-search-container { margin: 0 10px; }
+
+    /* Botón Hamburguesa (Header) */
+    .customer-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.6rem; /* Un poco más grande */
+        cursor: pointer;
+        padding: 5px;
+        display: flex; align-items: center;
+    }
+
+    /* 2. SIDEBAR (DRAWER) - Diseño Limpio */
+    .customer-sidebar {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: -320px; /* Oculto */
+        width: 300px; /* Un poco más ancho */
+        height: 100vh;
+        background-color: #fff; /* Tu color de fondo */
+        box-shadow: 5px 0 15px rgba(0,0,0,0.1); /* Sombra más suave */
+        z-index: 2000;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animación más fluida */
+        padding: 25px 20px; /* Más padding interno */
+    }
+
+    .customer-sidebar.open { left: 0; } /* Mostrar */
+
+    /* Cabecera del Sidebar (Título y Cerrar) */
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px; /* Más espacio debajo del título */
+    }
+
+    .sidebar-title {
+        font-size: 1.5rem; /* Título más grande como en la foto */
+        font-weight: 800;
+        color: #1f2937; /* Tu color oscuro */
+        margin: 0;
+    }
+
+    .btn-close-sidebar {
+        background: none;
+        border: none;
+        font-size: 1.8rem; /* Icono de cerrar más grande */
+        cursor: pointer;
+        color: #9ca3af; /* Gris suave para la X */
+        padding: 5px;
+        display: flex; align-items: center;
+        transition: color 0.2s;
+    }
+    .btn-close-sidebar:hover { color: #1f2937; }
+
+    /* Navegación */
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* Espacio entre enlaces */
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px; /* Botones más altos y cómodos */
+        border-radius: 10px; /* Bordes más redondeados */
+        color: #4b5563; /* Tu color de texto gris */
+        font-weight: 600;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        font-size: 1.05rem;
+        width: 100%;
+        transition: all 0.2s;
+    }
+    
+    /* Hover y Activo con tus colores violetas */
+    .sidebar-link:hover {
+        background-color: #f3f4f6;
+        color: #646cff;
+    }
+    .sidebar-link.active {
+        background-color: #eef2ff; /* Fondo violeta muy claro */
+        color: #646cff; /* Texto violeta */
+    }
+    
+    /* Botón de Salir */
+    .sidebar-link.logout {
+        color: #ef4444; /* Rojo */
+        margin-top: 10px;
+    }
+    .sidebar-link.logout:hover {
+        background-color: #fef2f2;
+        color: #dc2626;
+    }
+
+    .sidebar-divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 15px 0; /* Más margen en el divisor */
+    }
+
+    /* Overlay */
+    .customer-overlay {
+        display: block;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4); /* Un poco más transparente */
+        z-index: 1500;
+        backdrop-filter: blur(2px); /* Efecto borroso opcional en el fondo */
+    }
+}

@@ -1,0 +1,575 @@
+/* Archivo: src/modules/auth/shared/dashboard.css */
+
+/* ================================================= */
+/* ESTILOS BASE (ESCRITORIO > 768px)               */
+/* ================================================= */
+
+/* -------------------- LAYOUT PRINCIPAL (GRID) -------------------- */
+.dashboard-grid-container {
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Sidebar de 250px, Contenido el resto */
+    grid-template-rows: auto 1fr; /* Header arriba, Contenido/Sidebar abajo */
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    position: relative; /* Base para el overlay */
+}
+
+/* -------------------- HEADER -------------------- */
+.dashboard-header {
+    grid-column: 1 / -1; /* Ocupa todas las columnas */
+    background-color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 10px; /* Tu margen del header */
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.product-button {
+    background-color: #e9d5ff; /* Lila claro */
+    color: rgb(95, 95, 95);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    
+}
+
+.product-button:hover {
+    background-color: #d8b4fe;
+}
+
+.product-button ver{
+justify-content: right;
+}     
+
+.product,.input-buscar, .product-button{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+}
+/* Ocultar elementos de UI móvil en escritorio */
+.menu-toggle-button, .product-button-sidebar, .sidebar-overlay {
+    display: none;
+}
+
+
+/* -------------------- SIDEBAR (Estilos de escritorio) -------------------- */
+.dashboard-sidebar {
+    grid-row: 2 / 3; /* Debajo del header */
+    grid-column: 1 / 2; /* Primera columna */
+    background-color: white;
+    padding: 1rem;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column; /* Vertical en escritorio */
+    gap: 0.5rem;
+    border-radius: 10px; /* Tu borde redondeado */
+}
+
+.sidebar-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-item {
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    border-radius: 15px; /* Tu borde redondeado */
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.sidebar-item:hover {
+    background-color: #f9fafb;
+}
+
+.sidebar-item.active {
+    background-color: #eef2ff; /* Tu color de activo */
+    color: #4f46e5; /* Tu color de activo */
+}
+
+.sidebar-divider {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* -------------------- MAIN CONTENT (Estilos de escritorio) -------------------- */
+.logout-button{
+    background-color: #ede9fe; /* Lila */
+    color: #4b5563;
+    font-weight: 600;
+    padding: 0.5rem 1rem;      /* Relleno rectangular */
+    border: none;
+    border-radius: 0.375rem;   /* Bordes ligeramente redondeados */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+.logout-button:hover {
+    background-color: #ddd6fe;
+}
+.dashboard-main-content {
+    grid-row: 2 / 3; /* Debajo del header */
+    grid-column: 2 / 3; /* Segunda columna */
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Caja general */
+.content-message, .content-card {     
+    color: #4b5563;     
+    font-size: 1.125rem;     
+    background-color: white;      
+    padding: 1.5rem;     
+    border-radius: 0.5rem;     
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);     
+    border: 1px solid #e5e7eb;    
+     margin-bottom: 0.2em;  
+     
+        }
+
+
+.fila-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+/* Primera fila */
+.fila-inferior {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.input-buscar {
+  flex: 1;                 /* Ocupa todo el espacio libre */
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  min-width: 150px;
+}
+
+.product-button {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #ede9fe;
+  cursor: pointer;
+}
+
+.estado-select {
+  flex: 1;                 /* También crecerá según espacio disponible */
+  max-width: 250px;        /* Para que no se estire demasiado */
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* Estilo Base del Botón (PC) */
+.boton-crear-responsivo {
+    background-color: #ede9fe; /* Lila */
+    color: #4b5563;
+    font-weight: 600;
+    padding: 0.5rem 1rem;      /* Relleno rectangular */
+    border: none;
+    border-radius: 0.375rem;   /* Bordes ligeramente redondeados */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.boton-crear-responsivo:hover {
+    background-color: #ddd6fe;
+}
+
+/* En PC: Mostramos el texto */
+.texto-pc {
+    display: block;
+}
+
+/* En PC: Ocultamos el ícono */
+.icono-mobile {
+    display: none;
+}
+
+.card-title{
+    font-size: 1.5rem;
+    display: flex;
+    padding-bottom: 2%;
+}
+
+/* ================================================= */
+/* ESTILOS DE LA BARRA DE BÚSQUEDA EN PRODUCTOS (Search Bar)      */
+/* ================================================= */
+
+/* Contenedor que agrupa el Input y el Botón Lupa */
+.search-container {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Ocupa todo el espacio disponible en la fila */
+    gap: 8px; /* Espacio entre el input y el botón */
+    margin: 0 10px; /* Margen lateral para no pegarse a los bordes */
+}
+
+/* El Input de texto */
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 20px; /* Bordes redondeados */
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    outline: none;
+    font-size: 0.95rem;
+    color: #374151;
+    transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+    border-color: #818cf8; /* Color al hacer clic (indigo) */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* El Botón de la Lupa */
+.search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ede9fe; /* Color lila suave */
+    color: #4b5563; /* Gris oscuro para el icono */
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Círculo perfecto */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0; /* Evita que el botón se aplaste si falta espacio */
+}
+
+.search-btn:hover {
+    background-color: #ddd6fe; /* Un poco más oscuro al pasar el mouse */
+}
+
+/* AJUSTES PARA MÓVIL */
+@media (max-width: 768px) {
+    .search-container {
+        margin: 10px 0; /* Más margen vertical en móvil */
+        width: 100%;
+    }
+}
+
+/* ================================================= */
+/* ESTILOS DE LA VENTANA MODAL (FLOTANTE)            */
+/* ================================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Para que quede por encima de todo */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px; /* Ancho máximo en PC */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+/* IMAGEN SIMULADA */
+.modal-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 15px;
+}
+
+.modal-details p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #4b5563;
+}
+
+
+/* --------------------------------------------------- */
+/* MEDIA QUERY (MÓVILES - Sidebar Desplegable con Tus Estilos)*/
+/* --------------------------------------------------- */
+
+@media (max-width: 768px) {
+    
+    /* 1. LAYOUT PRINCIPAL (Reestructuración) */
+    .dashboard-grid-container {
+        /* Eliminamos la columna Sidebar; solo queda 1fr para el contenido */
+        grid-template-columns: 1fr;
+        /* Header (auto) y Contenido (1fr). La Sidebar está fuera del Grid (fixed) */
+        grid-template-rows: auto 1fr; 
+        overflow-x: hidden; /* IMPORTANTE: Para evitar barras de desplazamiento horizontales */
+    }
+
+    /* 2. HEADER (Ahora debe mostrar el botón de menú) */
+    .dashboard-header {
+        grid-column: 1 / -1;
+        flex-direction: row; /* Asegura que título y botón estén en fila */
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0; /* No debe haber margen inferior en header fijo */
+        position: fixed; /* 💡 Fijamos el header arriba */
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 50; /* Para que esté siempre arriba */
+    }
+    
+    .menu-toggle-button {
+        display: block; /* 💡 Mostrar botón de hamburguesa */
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #1f2937; /* Color del icono */
+    }
+    
+    .logout-button {
+        display: none; /* Ocultar el botón de cerrar sesión del header en móvil */
+    }
+
+
+    /* 3. SIDEBAR (Se vuelve un Drawer Oculto) */
+    .dashboard-sidebar {
+        /* 💡 Desacoplar del Grid y fijar */
+        grid-row: 1 / -1; /* Ocupa toda la altura */
+        grid-column: 1 / 2;
+        position: fixed; 
+        top: 0;
+        left: -250px; /* 💡 OCULTA por defecto */
+        width: 250px;
+        height: 100vh;
+        z-index: 40; /* Por encima del contenido */
+        transition: left 0.3s ease-in-out; /* Animación */
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        
+        /* Tus estilos para la sidebar en móvil */
+        background-color: white; /* Tu color de fondo */
+        padding: 1rem;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column; /* Los ítems apilados verticalmente */
+        gap: 0.5rem;
+        border-radius: 0 10px 10px 0; /* 💡 Borde redondeado solo a la derecha para que parezca una tarjeta que sale */
+        justify-content: flex-start; /* Contenido arriba */
+        padding-top: 5rem; /* Espacio para no chocar con el header fijo */
+    }
+
+    .dashboard-sidebar.open {
+        left: 0; /* 💡 MUESTRA la sidebar */
+    }
+    
+    /* Mostrar el botón de logout en la sidebar para móvil (con tus estilos) */
+    .product-button-sidebar {
+        display: block;
+        width: 90%;
+        margin: auto auto 1rem auto; /* 💡 Empujar al fondo con auto top-margin */
+        
+        /* Tus estilos para el botón de cerrar sesión */
+        background-color: rgb(216, 210, 218);
+        color: white;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+    
+    .product-button-sidebar:hover {
+        background-color: gray;
+    }
+
+    /* Ocultar el divisor en móvil (o posicionarlo si es necesario) */
+    .sidebar-divider {
+        display: block; /* Mantenemos el divisor, si lo quieres visible en la sidebar del móvil */
+    }
+
+    /* 4. CONTENT (Ajuste de margen y padding) */
+    .dashboard-main-content {
+        grid-row: 2 / 3; /* Se mueve a la Fila 2 (debajo del header fijo) */
+        grid-column: 1 / -1; 
+        padding: 1rem;
+        margin-top: 4rem; /* 💡 Margen para evitar que el contenido quede debajo del header fijo */
+    }
+
+    /* 5. OVERLAY (Fondo oscuro) */
+    .sidebar-overlay {
+        display: block; /* Se controla con JS/React, pero debe ser display: block en el CSS base móvil */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 30; /* Por debajo de la sidebar (40) */
+    }
+
+    /* MOBILE DEL CREAR PRODUCTO*/
+  /* ================================================= */
+    /* MOBILE DEL CREAR PRODUCTO (Diseño Compacto)       */
+    /* ================================================= */
+/* AJUSTE FILA SUPERIOR */
+    .fila-superior {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* TRANSFORMACIÓN DEL BOTÓN A CÍRCULO */
+    .boton-crear-responsivo {
+        width: 40px;           /* Ancho fijo */
+        height: 40px;          /* Alto fijo */
+        padding: 0;            /* Sin relleno para centrar el ícono */
+        border-radius: 50%;    /* 💡 Se vuelve redondo */
+        flex-shrink: 0;        /* Evita que se aplaste */
+    }
+
+    /* EN MÓVIL: Ocultamos el texto "Crear Producto" */
+    .texto-pc {
+        display: none;
+    }
+
+    .boton-oculto-mobile {
+        display: none !important;
+    }
+    /* EN MÓVIL: Mostramos el ícono "+" */
+    .icono-mobile {
+        display: flex;         /* Hacemos visible el span del ícono */
+        font-size: 1.2rem;     /* Tamaño del ícono */
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-title {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    /* Estilo para el nuevo botón redondo con '+' */
+    .boton-crear-plus {
+        display: flex;              /* Para centrar el '+' */
+        justify-content: center;
+        align-items: center;
+        width: 40px;                /* Ancho fijo */
+        height: 40px;               /* Alto fijo (igual al ancho = círculo) */
+        border-radius: 50%;         /* 💡 Lo hace redondo */
+        background: #ede9fe;        /* Color lila */
+        color: #4b5563;             /* Color del '+' */
+        font-size: 1.5rem;          /* '+' grande */
+        font-weight: 300;
+        border: none;
+        cursor: pointer;
+        padding: 0;                 /* Sin relleno extra */
+        flex-shrink: 0;             /* Evita que se aplaste */
+    }
+
+
+    /* --- 2. FILA INFERIOR (Buscador+Lupa, luego Select) --- */
+    .fila-inferior {
+        flex-wrap: wrap;            /* 💡 Permite que el select baje de línea */
+        gap: 10px;                  /* Espacio entre elementos */
+    }
+
+    /* Input y Lupa comparten la primera línea */
+    .input-buscar {
+        flex: 1 1 auto;             /* Ocupa el espacio disponible */
+        min-width: 120px;           /* Un mínimo para no romperse */
+    }
+
+    .product-button {
+        display: flex;              /* Aseguramos que se muestre */
+        align-items: center;
+        justify-content: center;
+        width: 40px;                /* Tamaño cuadrado */
+        height: 40px;
+        padding: 0;                 /* Centrar el ícono */
+        flex: 0 0 auto;             /* Tamaño fijo */
+    }
+
+    /* El Select baja a la segunda línea */
+    .estado-select {
+        flex-basis: 100%;           /* 💡 Fuerza salto de línea y ocupa 100% ancho */
+        width: 100%;
+        max-width: 100%;            /* Resetea límites de PC */
+        margin-top: 5px;            /* Aire arriba */
+        order: 3;                   /* Asegura posición final */
+        height: 40px;               /* Misma altura que los otros inputs */
+    }
+    /* Agrega esto al final de dashboard.css */
+
+
+}

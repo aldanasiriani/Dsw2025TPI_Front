@@ -1,0 +1,113 @@
+/* ================================================= */
+/* PAGINACIÓN (Estilos Compartidos)                  */
+/* ================================================= */
+
+.pagination-wrapper {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Botones de texto (Previous/Next) */
+.page-btn-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6b7280; /* Gris */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.page-btn-text:hover:not(:disabled) {
+    color: #1f2937; /* Negro al hover */
+}
+
+.page-btn-text:disabled {
+    color: #d1d5db; /* Gris claro deshabilitado */
+    cursor: not-allowed;
+}
+
+.icon-sm {
+    font-size: 0.8rem;
+}
+
+/* ================================================= */
+/* ESTILOS PC (Escritorio > 768px)                   */
+/* ================================================= */
+
+.pagination-pc {
+    display: flex;
+    justify-content: space-between; /* Extremos opuestos */
+    align-items: center;
+}
+
+.page-numbers-container {
+    display: flex;
+    gap: 5px;
+}
+
+/* Botones de número (1, 2, 3...) */
+.page-number {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: #4b5563;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.page-number:hover:not(.active):not(.dots) {
+    background-color: #f3f4f6;
+}
+
+/* Estado Activo (Negro con texto blanco, como la foto) */
+.page-number.active {
+    background-color: #1f2937; /* Gris muy oscuro/negro */
+    color: white;
+}
+
+.page-number.dots {
+    cursor: default;
+    color: #9ca3af;
+}
+
+/* OCULTAR MOBILE en PC */
+.pagination-mobile {
+    display: none;
+}
+
+
+/* ================================================= */
+/* ESTILOS MOBILE (Móviles < 768px)                  */
+/* ================================================= */
+
+@media (max-width: 768px) {
+    
+    /* OCULTAR PC en Mobile */
+    .pagination-pc {
+        display: none;
+    }
+
+    /* MOSTRAR MOBILE */
+    .pagination-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .page-info-mobile {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+}
