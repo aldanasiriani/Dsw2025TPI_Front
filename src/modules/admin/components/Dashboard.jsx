@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import '../shared/dashboard.css';
-import CreateProductForm from './CreateProductForm'; 
-import Pagination from './Pagination';
+import '../../shared/dashboard.css';
+
+import CreateProductForm from "../../products/components/CreateProductForm"
+import Pagination from "../../products/components/Pagination"
+
+
 // 1. AGREGAMOS FaEye A LOS IMPORTS
 import { FaSearch, FaPlus, FaEdit, FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; 
-import ProductDetailModal from './ProductDetailModal';
+import api from '../../auth/services/api'; 
+
+import ProductDetailModal from "../../products/components/ProductDetailModal"
+
 
 
 
@@ -37,6 +42,10 @@ function Dashboard() {
 
     const navigate = useNavigate();
 
+// --- NUEVO: ESTADOS PARA EL CONTADOR TOTAL ---
+    const [totalProductsCount, setTotalProductsCount] = useState(0);
+    const [totalOrdersCount, setTotalOrdersCount] = useState(0);
+
     // --- EFECTO DE CARGA ---
     useEffect(() => {
         const fetchData = async () => {
@@ -58,16 +67,21 @@ function Dashboard() {
                         setProducts(response.data.items);
                         const count = response.data.totalCount;
                         const pages = Math.ceil(count / pageSize);
-                        setTotalPages(pages > 0 ? pages : 1);
+                        setTotalProductsCount(response.data.totalCount); 
+                        // --------------------------------------
+
+                        setTotalPages(Math.ceil(response.data.totalCount / pageSize) || 1);
                     } 
                     else if (Array.isArray(response.data)) {
                         setProducts(response.data);
                         const count = response.data.length;
                         const pages = Math.ceil(count / pageSize);
-                        setTotalPages(pages > 0 ? pages : 1);
+                        setTotalProductsCount(response.data.length); // Fallback
+                        setTotalPages(Math.ceil(response.data.length / pageSize) || 1);
                     } 
                     else {
                         setProducts([]);
+                        setTotalProductsCount(0);
                         setTotalPages(1);
                     }
                 }
@@ -92,11 +106,16 @@ function Dashboard() {
                              setOrders(response.data.items);
                              const count = response.data.totalCount;
                              const pages = Math.ceil(count / pageSize);
-                             setTotalPages(pages > 0 ? pages : 1);
+                             setTotalOrdersCount(response.data.totalCount);
+                             // -------------------------------------------------
+
+                             setTotalPages(Math.ceil(response.data.totalCount / pageSize) || 1);
                         } else if (Array.isArray(response.data)) {
                              setOrders(response.data);
+                             setTotalOrdersCount(response.data.length);
                         } else {
                              setOrders([]);
+                             setTotalOrdersCount(0);
                         }
 
                     } catch (e) {
@@ -190,15 +209,17 @@ function Dashboard() {
                 <>
                 <div className="content-message">
                     <h3 className="card-title"><strong>Productos</strong></h3>
-                    <p className="card-text">Cantidad visualizada: 
-                        <span className="card-value"> {products.length}</span>
+                    <p className="card-text">
+                        
+  | Total: <span className="card-value">{totalProductsCount}</span>
                     </p>
                 </div>
 
                 <div className="content-message">
                     <h3 className="card-title"><strong>Ordenes</strong></h3>
-                    <p className="card-text">Cantidad visualizada: 
-                        <span className="card-value"> {orders.length}</span>
+                    <p className="card-text">
+                       
+  | Total: <span className="card-value">{totalOrdersCount}</span>
                     </p>
                 </div>
                 </>

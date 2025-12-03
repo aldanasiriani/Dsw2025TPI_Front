@@ -1,6 +1,7 @@
 import React from 'react';
 // IMPORTANTE: Verifica que '../components/CreateProductForm' sea la ruta real
-import CreateProductForm from '../components/CreateProductForm';
+
+import CreateProductForm from "../../products/components/CreateProductForm"
 
 function CreateProductPage() {
   return (

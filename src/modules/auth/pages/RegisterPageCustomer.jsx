@@ -1,5 +1,6 @@
 import React from 'react';
-import RegisterForm from '../components/RegisterForm';
+
+import RegisterForm from "../components/RegisterForm"
 
 // TÚ DIJISTE: RegisterPageCustomer.jsx ES CLIENTE
 export default function RegisterPageCustomer() {

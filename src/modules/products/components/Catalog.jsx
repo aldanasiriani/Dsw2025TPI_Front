@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import '../shared/ProductCard.css';
 import '../shared/dashboard.css';
-import api from '../services/api'; 
+import api from "../../auth/services/api";
+
 
 function Catalog() {
   // 1. Estados

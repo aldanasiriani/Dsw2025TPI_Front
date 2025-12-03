@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Input from './Input'; 
 import Button from './Button'; 
-import { registerUser } from '../services/register'; 
-import '../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
+import { registerUser } from '../../auth/services/register'; 
+import '../../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
 
 function RegisterForm({ showRole = false }) { 
     

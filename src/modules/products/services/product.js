@@ -1,9 +1,11 @@
 // services/productService.js
 // Asegúrate de usar el puerto HTTPS correcto (7138 según vimos antes)
+// src/modules/auth/services/product.js
+
+// Ajusta el puerto si es necesario (7138 HTTPS)
 const API_URL = 'https://localhost:7138/api/products'; 
 
 // --- FUNCIÓN 1: OBTENER PRODUCTOS (Paginación) ---
-// Esta la usa el Dashboard
 export const getProducts = async (page = 1, limit = 10) => {
     const token = localStorage.getItem('token');
     
@@ -26,7 +28,6 @@ export const getProducts = async (page = 1, limit = 10) => {
 };
 
 // --- FUNCIÓN 2: CREAR PRODUCTO ---
-// Esta la usa el CreateProductForm (¡Esta es la que te faltaba!)
 export const createProduct = async (productData) => {
     const token = localStorage.getItem('token'); 
 
@@ -39,11 +40,10 @@ export const createProduct = async (productData) => {
         body: JSON.stringify(productData)
     });
 
+    // CORRECCIÓN: Leemos el error real en vez de llamar a parseError
     if (!response.ok) {
-        if (response.status === 401) throw new Error("No autorizado.");
-        
-        const errorData = await response.text();
-        throw new Error(errorData || 'Error al crear el producto');
+        const errorText = await response.text(); // Leemos el mensaje del backend
+        throw new Error(errorText || 'Error al crear el producto');
     }
 
     return await response.json();
@@ -53,7 +53,6 @@ export const createProduct = async (productData) => {
 export const updateProduct = async (id, productData) => {
     const token = localStorage.getItem('token'); 
 
-    // La URL suele ser: /api/products/{id}
     const response = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: {
@@ -63,11 +62,34 @@ export const updateProduct = async (id, productData) => {
         body: JSON.stringify(productData)
     });
 
+    // CORRECCIÓN: Leemos el error real en vez de llamar a parseError
     if (!response.ok) {
-        if (response.status === 401) throw new Error("No autorizado.");
-        const errorData = await response.text();
-        throw new Error(errorData || 'Error al actualizar el producto');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Error al actualizar el producto');
     }
 
     return await response.json();
+};
+
+// --- FUNCIÓN 4: CAMBIAR ESTADO (Activar/Desactivar) ---
+// (Agrego esta porque la usas en el Dashboard para el botón Toggle)
+export const toggleProductStatus = async (id, isActive) => {
+    const token = localStorage.getItem('token'); 
+    
+    // Si está activo -> llamamos a 'disable'. Si no -> llamamos a 'enable'
+    const action = isActive ? 'disable' : 'enable';
+
+    const response = await fetch(`${API_URL}/${id}/${action}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error al cambiar el estado a ${action}`);
+    }
+    
+    return true;
 };

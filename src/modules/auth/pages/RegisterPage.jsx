@@ -1,5 +1,8 @@
 import React from 'react';
-import RegisterForm from '../components/RegisterForm';
+
+import RegisterForm from "../components/RegisterForm"
+
+
 
 // TÚ DIJISTE: RegisterPage.jsx ES ADMIN
 export default function RegisterPage() {

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import ProductCard from '../components/ProductCard'; 
+import ProductCard from '../../products/components/ProductCard'; 
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../context/CartContext'; 
-import api from '../services/api'; 
-import '../shared/dashboard.css'; 
-import '../shared/home.css'; // 💡 Aquí están los estilos del sidebar móvil
+import api from "../../auth/services/api";
+import '../../shared/dashboard.css'; 
+import '../../shared/home.css'; // 💡 Aquí están los estilos del sidebar móvil
+
+
 
 import { 
     FaStore, FaShoppingCart, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaBars, FaTimes,

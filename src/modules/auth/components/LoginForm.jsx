@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Input from './Input';
 import Button from './Button';
-import { login } from '../services/login'; 
-import '../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
+import { login } from '../../auth/services/login'; 
+import '../../shared/authentication.css'; // 💡 IMPORTAMOS EL CSS
 
 function LoginForm() {
     const navigate = useNavigate();

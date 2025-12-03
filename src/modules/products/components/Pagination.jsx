@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import '../shared/dashboard.css'; // Asegúrate de importar tus estilos
-import '../shared/pagination.css';
+import '../../shared/dashboard.css'; // Asegúrate de importar tus estilos
+import '../../shared/pagination.css';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 

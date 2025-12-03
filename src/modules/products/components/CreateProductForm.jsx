@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form'; 
-import Input from './Input'; 
-import Button from './Button'; 
-import { createProduct, updateProduct} from "../services/product";
+import Button from "../../auth/components/Button";
+import Input from "../../auth/components/Input";
+
+import { createProduct, updateProduct} from "../../products/services/product";
 
 
 function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
@@ -11,7 +12,8 @@ function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
         register: formRegister,
         handleSubmit,
         formState: { errors },
-        setValue, // Necesario para rellenar el formulario manualmente
+        setValue, 
+        setError, // <--- 1. IMPORTANTE: Necesitamos esto para marcar errores del back
         reset
     } = useForm({
         defaultValues: { sku: '', codigoUnico: '', nombre: '', descripcion: '', precio: 0, stock: 0 }
@@ -19,27 +21,24 @@ function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
     
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // --- EFECTO: Si hay un producto para editar, rellenamos el formulario ---
     useEffect(() => {
         if (productToEdit) {
-            // Mapeamos los datos que vienen del Backend a los campos del Formulario
             setValue('sku', productToEdit.sku);
-            setValue('codigoUnico', productToEdit.internalCode || ''); // A veces el backend lo llama diferente
+            setValue('codigoUnico', productToEdit.internalCode || ''); 
             setValue('nombre', productToEdit.name);
             setValue('descripcion', productToEdit.description || '');
             setValue('precio', productToEdit.currentUnitPrice);
             setValue('stock', productToEdit.stockQuantity);
         } else {
-            reset(); // Si no hay producto, limpiamos
+            reset(); 
         }
     }, [productToEdit, setValue, reset]);
 
-    const onValid = async (formData) => {
+   const onValid = async (formData) => {
         setIsSubmitting(true);
         try {
-            // 1. Preparamos el objeto para el Backend (DTO)
+            // 1. Preparamos el objeto para el Backend
             const productPayload = {
-                // Si editamos, necesitamos mandar el ID (aunque suele ir en la URL, el DTO a veces lo pide)
                 Id: productToEdit ? productToEdit.id : undefined, 
                 Sku: formData.sku,
                 InternalCode: formData.codigoUnico,
@@ -47,26 +46,46 @@ function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
                 Description: formData.descripcion,
                 CurrentUnitPrice: parseFloat(formData.precio),
                 StockQuantity: parseInt(formData.stock, 10),
-                IsActive: true // Por defecto activo
+                IsActive: true 
             };
 
-            // 2. Decidimos si CREAR o ACTUALIZAR
+            // 2. Enviamos al backend
             if (productToEdit) {
-                // MODO EDICIÓN
                 await updateProduct(productToEdit.id, productPayload);
                 alert("¡Producto actualizado con éxito!");
             } else {
-                // MODO CREACIÓN
                 await createProduct(productPayload);
                 alert("¡Producto creado con éxito!");
             }
 
-            // 3. Avisamos al padre que terminamos
             if (onAfterCreate) onAfterCreate();
 
         } catch (error) {
-            console.error(error);
-            alert("Error al guardar: " + error.message);
+            console.error("Error del back:", error);
+            
+            // --- CORRECCIÓN AQUÍ: Leemos el mensaje directo, sin usar 'parseError' ---
+            const errorText = error.message || "Error desconocido";
+
+            // 3. DETECCIÓN DE SKU DUPLICADO
+            // Buscamos palabras clave en el mensaje de error del backend
+            if (errorText.toLowerCase().includes("sku") && errorText.toLowerCase().includes("existe")) {
+                setError('sku', { 
+                    type: 'manual', 
+                    message: '⛔ Este SKU ya está en uso. Intenta con otro.' 
+                });
+            } 
+            // 4. DETECCIÓN DE CÓDIGO INTERNO DUPLICADO
+            else if (errorText.toLowerCase().includes("código") || errorText.toLowerCase().includes("internalcode")) {
+                setError('codigoUnico', { 
+                    type: 'manual', 
+                    message: '⛔ Este código interno ya existe.' 
+                });
+            }
+            // 5. CUALQUIER OTRO ERROR (Lo mostramos en alerta)
+            else {
+                alert("Ocurrió un error al guardar: " + errorText);
+            }
+
         } finally {
             setIsSubmitting(false);
         }
@@ -74,24 +93,26 @@ function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
 
     return (
         <div className="w-full"> 
-            {/* Título dinámico */}
             <h2 className="card-title" style={{ marginBottom: '20px' }}>
                 <strong>{productToEdit ? 'Editar Producto' : 'Crear Nuevo Producto'}</strong>
             </h2>
             
             <form onSubmit={handleSubmit(onValid)} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 
-                {/* 1. SKU (A veces no se permite editar el SKU, pero lo dejaremos habilitado por ahora) */}
+                {/* 1. SKU */}
                 <Input 
                     label='SKU' 
                     { ...formRegister('sku', { required: 'El SKU es obligatorio' }) }
                     error={errors.sku?.message} 
                 />
 
-                {/* 2. CÓDIGO ÚNICO */}
+                {/* 2. CÓDIGO ÚNICO - CORREGIDO: Agregada validación required */}
                 <Input 
                     label='Código Único' 
-                    { ...formRegister('codigoUnico') } 
+                    { ...formRegister('codigoUnico', { 
+                        required: 'El código único es obligatorio',
+                        minLength: { value: 3, message: 'Mínimo 3 caracteres' }
+                    }) } 
                     error={errors.codigoUnico?.message} 
                 />
 
@@ -111,26 +132,24 @@ function CreateProductForm({ onAfterCreate, onCancel, productToEdit = null }) {
 
                 <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                     <div style={{ flex: 1 }}>
-                        {/* 5. PRECIO */}
                         <Input 
                             label='Precio' 
                             type="number" 
                             step="0.01" 
                             { ...formRegister('precio', { 
                                 required: 'El precio es obligatorio',
-                                min: { value: 0.01, message: 'El precio debe ser mayor a 0' }
+                                min: { value: 0.01, message: 'Mayor a 0' }
                             }) } 
                             error={errors.precio?.message} 
                         />
                     </div>
                     <div style={{ flex: 1 }}>
-                        {/* 6. STOCK */}
                         <Input 
                             label='Stock' 
                             type="number" 
                             { ...formRegister('stock', { 
                                 required: 'El stock es obligatorio',
-                                min: { value: 0, message: 'No puede ser negativo' }
+                                min: { value: 0, message: 'No negativo' }
                             }) } 
                             error={errors.stock?.message} 
                         />

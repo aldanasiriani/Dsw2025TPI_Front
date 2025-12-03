@@ -1,7 +1,7 @@
 // Archivo: src/modules/auth/components/ProductCard.jsx
 
 import React, { useState, useEffect } from 'react';
-import '../shared/ProductCard.css'; // Solo necesita sus estilos propios
+import '../../shared/ProductCard.css'; // Solo necesita sus estilos propios
 import { useCart } from '../../../context/CartContext';
 
 function ProductCard({ id, title, price, stock, isWide }) {

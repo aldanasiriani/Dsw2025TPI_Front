@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useCart } from '../../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
-import '../shared/dashboard.css'; // Asegúrate de importar donde pusiste el header
-import '../shared/home.css';      // 💡 Importamos los estilos nuevos
+import "../../shared/dashboard.css";
+import "../../shared/home.css";
 import { createOrder } from '../services/orderService'; 
 import { FaShoppingCart, FaTrash } from 'react-icons/fa'; 
 

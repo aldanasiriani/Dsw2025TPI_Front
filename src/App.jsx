@@ -3,11 +3,11 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import RegisterPage from './modules/auth/pages/RegisterPage';                 // ESTE ES EL ADMIN
 import RegisterPageCustomer from './modules/auth/pages/RegisterPageCustomer'; // ESTE ES EL CLIENTE
 
-import CustomerProductPage from './modules/auth/pages/CustomerProductPage';
-import Dashboard from './modules/auth/components/Dashboard';
-import CreateProductPage from './modules/auth/pages/CreateProductPage';
+import CustomerProductPage from './modules/products/pages/CustomerProductPage';
+import Dashboard from './modules/admin/components/Dashboard';
+import CreateProductPage from './modules/products/pages/CreateProductPage';
 import ProtectedRoute from './modules/auth/components/ProtectedRoute';
-import CartPage from './modules/auth/pages/CartPage';
+import CartPage from './modules/orders/pages/CartPage';
 
 function App() {
   return (

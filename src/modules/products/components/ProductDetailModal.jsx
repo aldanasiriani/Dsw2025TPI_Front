@@ -1,5 +1,5 @@
 import React from 'react';
-import '../shared/dashboard.css'; // Importamos los estilos para que se vea bien
+import '../../shared/dashboard.css'; // Importamos los estilos para que se vea bien
 
 function ProductDetailModal({ item, onClose }) {
     if (!item) return null;
