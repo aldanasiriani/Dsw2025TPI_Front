@@ -24,6 +24,10 @@ const CartPage = () => {
   };
 
   const handleIncrease = (item) => {
+     if (item.stockQuantity && item.quantity >= item.stockQuantity) {
+          alert(`¡Ups! Solo hay ${item.stockQuantity} unidades disponibles.`);
+          return; // Detenemos la función aquí
+      }
       updateQuantity(item.id, item.quantity + 1);
   };
 

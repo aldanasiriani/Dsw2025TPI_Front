@@ -27,23 +27,19 @@ export const CartProvider = ({ children }) => {
       // Usamos 'id' consistentemente para buscar
       const existingItem = prevCart.find(item => item.id === product.id);
       
-      if (existingItem) {
-        // Si existe, sumamos la cantidad
+    if (existingItem) {
         return prevCart.map(item => 
           item.id === product.id 
             ? { ...item, quantity: item.quantity + quantity } 
             : item
         );
       } else {
-        // CORRECCIÓN IMPORTANTE:
-        // 1. Usamos 'id' (no productId) para que coincida con el resto del front.
-        // 2. Usamos 'currentUnitPrice' para que coincida con CartPage y evite el NaN.
-        // 3. Usamos parseFloat para asegurar que el precio sea un número.
         return [...prevCart, { 
             id: product.id, 
             name: product.name,
-            currentUnitPrice: parseFloat(product.currentUnitPrice), 
-            quantity: quantity 
+            currentUnitPrice: parseFloat(product.currentUnitPrice),
+            stockQuantity: product.stockQuantity, // <--- ¡AGREGAR ESTA LÍNEA!
+            quantity: quantity
         }];
       }
     });

@@ -5,6 +5,7 @@ import '../shared/ProductCard.css'; // Solo necesita sus estilos propios
 import { useCart } from '../../../context/CartContext';
 
 function ProductCard({ id, title, price, stock, isWide }) {
+
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart(); 
   
@@ -31,12 +32,11 @@ function ProductCard({ id, title, price, stock, isWide }) {
     const productToAdd = {
         id: id,
         name: title,
-        currentUnitPrice: parseFloat(price)
+        currentUnitPrice: parseFloat(price),
+        stockQuantity: stock
     };
     
-    addToCart(productToAdd, quantity);
-    
-    // Activamos la animación
+   addToCart(productToAdd, quantity);
     setShowToast(true);
   };
 
